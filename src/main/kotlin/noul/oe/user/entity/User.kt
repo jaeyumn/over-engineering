@@ -1,13 +1,8 @@
 package noul.oe.user.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import noul.oe.common.entity.BaseEntity
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Table(name = "users")
@@ -16,10 +11,13 @@ class User(
     @Column(columnDefinition = "CHAR(36)")
     val id: String = UUID.randomUUID().toString(),
 
+    @Column(unique = true, nullable = false)
     val username: String,
 
+    @Column(unique = true, nullable = false)
     val email: String,
 
+    @Column(nullable = false)
     val password: String,
 
     @Enumerated(EnumType.STRING)
