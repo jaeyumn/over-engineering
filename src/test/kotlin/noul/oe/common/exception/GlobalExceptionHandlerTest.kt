@@ -1,11 +1,13 @@
 package noul.oe.common.exception
 
+import noul.oe.config.SecurityTestConfig
 import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -15,6 +17,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import(SecurityTestConfig::class)
 class GlobalExceptionHandlerTest {
 
     @Autowired
@@ -26,9 +29,7 @@ class GlobalExceptionHandlerTest {
         val errorCode = CommonErrorCode.INVALID_INPUT.code
         val errorMessage = CommonErrorCode.INVALID_INPUT.message
 
-        mockMvc.perform(
-            get("/api/test/base-exception")
-        )
+        mockMvc.perform(get("/api/test/base-exception"))
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.success").value(false))
             .andExpect(jsonPath("$.error.code").value(errorCode))
@@ -53,12 +54,20 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("내부 서버 오류 시, handleException이 핸들링된다")
     fun test102() {
-        mockMvc.perform(
-            get("/api/test/internal-exception")
-        )
+        mockMvc.perform(get("/api/test/internal-exception"))
             .andExpect(status().isInternalServerError)
             .andExpect(jsonPath("$.success").value(false))
             .andExpect(jsonPath("$.error.code").value("INTERNAL_SERVER_ERROR"))
             .andExpect(jsonPath("$.error.message").value(containsString("테스트 오류 발생")))
+    }
+
+    @Test
+    @DisplayName("로그인 실패 시, handleBadCredentialsException이 핸들링된다")
+    fun test103() {
+        mockMvc.perform(get("/api/test/credentials-exception"))
+            .andExpect(status().isUnauthorized)
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.error.code").value("INVALID_CREDENTIALS"))
+            .andExpect(jsonPath("$.error.message").value("아이디 또는 비밀번호가 올바르지 않음"))
     }
 }

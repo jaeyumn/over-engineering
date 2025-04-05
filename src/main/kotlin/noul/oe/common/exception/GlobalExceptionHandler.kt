@@ -1,8 +1,10 @@
 package noul.oe.common.exception
 
 import noul.oe.common.response.ApiResponse
+import noul.oe.user.exception.UserErrorCode
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -11,14 +13,21 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException::class)
-    fun handleBaseException(exception: BaseException): ResponseEntity<ApiResponse<Nothing>> {
-        return generateErrorResponse(exception.errorCode)
+    fun handleBaseException(e: BaseException): ResponseEntity<ApiResponse<Nothing>> {
+        return generateErrorResponse(e.errorCode)
+    }
+
+    @ExceptionHandler(BadCredentialsException::class)
+    fun handleBadCredentialsException(e: BadCredentialsException): ResponseEntity<ApiResponse<Nothing>> {
+        val errorCode = UserErrorCode.INVALID_CREDENTIALS
+        val message = e.message ?: errorCode.message
+        return generateErrorResponse(errorCode, message)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidationException(exception: MethodArgumentNotValidException): ResponseEntity<ApiResponse<Nothing>> {
+    fun handleValidationException(e: MethodArgumentNotValidException): ResponseEntity<ApiResponse<Nothing>> {
         val errorCode = CommonErrorCode.INVALID_INPUT
-        val fieldErrors = exception.bindingResult.fieldErrors.joinToString {
+        val fieldErrors = e.bindingResult.fieldErrors.joinToString {
             "${it.field} : ${it.defaultMessage ?: errorCode.message}"
         }
         val message = fieldErrors.ifEmpty { errorCode.message }
@@ -27,9 +36,9 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception::class)
-    fun handleException(exception: Exception): ResponseEntity<ApiResponse<Nothing>> {
+    fun handleException(e: Exception): ResponseEntity<ApiResponse<Nothing>> {
         val errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR
-        val message = exception.message ?: errorCode.message
+        val message = e.message ?: errorCode.message
         return generateErrorResponse(errorCode, message)
     }
 

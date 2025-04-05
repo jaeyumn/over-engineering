@@ -2,6 +2,8 @@ package noul.oe.user.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import noul.oe.common.entity.BaseEntity
@@ -19,5 +21,8 @@ class User(
     val email: String,
 
     val password: String,
+
+    @Enumerated(EnumType.STRING)
+    val role: Role = Role.USER
 
 ) : BaseEntity()
