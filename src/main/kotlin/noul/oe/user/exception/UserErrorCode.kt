@@ -11,5 +11,5 @@ enum class UserErrorCode(
     USERNAME_ALREADY_EXISTS("USERNAME_ALREADY_EXISTS", "Username already exists.", HttpStatus.CONFLICT),
     EMAIL_ALREADY_EXISTS("EMAIL_ALREADY_EXISTS", "Email already exists.", HttpStatus.CONFLICT),
     USER_NOT_FOUND("USER_NOT_FOUND", "User not found.", HttpStatus.NOT_FOUND),
-    PASSWORD_MISMATCH("PASSWORD_MISMATCH", "Password mismatch", HttpStatus.UNAUTHORIZED),
+    INVALID_CREDENTIALS("INVALID_CREDENTIALS", "Invalid username or password", HttpStatus.UNAUTHORIZED),
 }

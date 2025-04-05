@@ -23,10 +23,4 @@ class UserController(
         userService.signUp(request)
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success())
     }
-
-    @PostMapping("/log-in")
-    fun logIn(@Valid @RequestBody request: UserLogInRequest): ResponseEntity<ApiResponse<UserResponse>> {
-        val response = userService.logIn(request)
-        return ResponseEntity.ok(ApiResponse.success(response))
-    }
 }
