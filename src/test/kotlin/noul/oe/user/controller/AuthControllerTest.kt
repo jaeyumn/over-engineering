@@ -33,7 +33,6 @@ class AuthControllerTest {
     private val objectMapper = ObjectMapper()
 
     @Test
-    @DisplayName("로그인 성공")
     fun logInTest() {
         // given
         val request = UserLogInRequest("testuser", "password123")
@@ -59,7 +58,6 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("로그아웃 성공")
     fun logOutTest() {
         // when & then
         mockMvc.perform(post("/api/auth/log-out"))
