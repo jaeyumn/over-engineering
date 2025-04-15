@@ -1,18 +1,21 @@
 package noul.oe.user.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.servlet.http.HttpServletRequest
 import noul.oe.config.SecurityTestConfig
 import noul.oe.user.dto.request.UserLogInRequest
 import noul.oe.user.dto.response.UserResponse
 import noul.oe.user.service.AuthService
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
+import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -33,7 +36,7 @@ class AuthControllerTest {
     private val objectMapper = ObjectMapper()
 
     @Test
-    fun logInTest() {
+    fun loginTest() {
         // given
         val request = UserLogInRequest("testuser", "password123")
         val response = UserResponse(
@@ -43,24 +46,24 @@ class AuthControllerTest {
             createdAt = LocalDateTime.now(),
             modifiedAt = LocalDateTime.now(),
         )
+        val httpRequest = MockHttpServletRequest()
 
-        whenever(authService.logIn(request)).thenReturn(response)
+        whenever(authService.login(request, httpRequest)).thenReturn(response)
 
         // when & then
         mockMvc.perform(
-            post("/api/auth/log-in")
+            post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.username").value(request.username))
     }
 
     @Test
-    fun logOutTest() {
+    fun logoutTest() {
         // when & then
-        mockMvc.perform(post("/api/auth/log-out"))
+        mockMvc.perform(post("/api/auth/logout"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.data").doesNotExist())

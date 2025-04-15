@@ -1,5 +1,6 @@
 package noul.oe.user.service
 
+import jakarta.servlet.http.HttpServletRequest
 import noul.oe.user.dto.request.UserLogInRequest
 import noul.oe.user.entity.User
 import noul.oe.user.exception.InvalidCredentialsException
@@ -19,17 +20,20 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.core.Authentication
 import java.time.LocalDateTime
 
 class AuthServiceTest {
     private lateinit var sut: AuthService
     private lateinit var authenticationManager: AuthenticationManager
     private lateinit var userRepository: UserRepository
+    private lateinit var httpRequest: HttpServletRequest
 
     @BeforeEach
     fun setUp() {
         authenticationManager = mock<AuthenticationManager>()
         userRepository = mock<UserRepository>()
+        httpRequest = mock<HttpServletRequest>()
         sut = AuthService(userRepository, authenticationManager)
     }
 
@@ -44,13 +48,13 @@ class AuthServiceTest {
             whenever(userRepository.findByUsername(request.username)).thenReturn(null)
 
             // when & then
-            assertThatThrownBy { sut.logIn(request) }
+            assertThatThrownBy { sut.login(request, httpRequest) }
                 .isInstanceOf(UserNotFoundException::class.java)
                 .hasMessageContaining(UserErrorCode.USER_NOT_FOUND.message)
         }
 
         @Test
-        @DisplayName("아이디 or 비밀번호 불일치 시, InvalidCredentialsException이 발생한다")
+        @DisplayName("아이디 or 비밀번호 불일치 시, BadCredentialsException이 발생한다")
         fun test2() {
             // given
             val request = createLogInRequest()
@@ -63,9 +67,9 @@ class AuthServiceTest {
                 .thenThrow(BadCredentialsException("Bad credentials"))
 
             // when & then
-            assertThatThrownBy { sut.logIn(request) }
-                .isInstanceOf(InvalidCredentialsException::class.java)
-                .hasMessageContaining(UserErrorCode.INVALID_CREDENTIALS.message)
+            assertThatThrownBy { sut.login(request, httpRequest) }
+                .isInstanceOf(BadCredentialsException::class.java)
+                .hasMessageContaining("Bad credentials")
         }
 
         @Test
@@ -82,11 +86,14 @@ class AuthServiceTest {
                 on { modifiedAt } doReturn now
                 on { password } doReturn "encodedPassword"
             }
+            val mockAuthentication = mock<Authentication>()
+            whenever(mockAuthentication.isAuthenticated).thenReturn(true)
             whenever(userRepository.findByUsername(request.username)).thenReturn(mockUser)
-            whenever(authenticationManager.authenticate(any())).thenReturn(mock())
+            whenever(authenticationManager.authenticate(any())).thenReturn(mockAuthentication)
+            whenever(httpRequest.session).thenReturn(mock())
 
             // when
-            val result = sut.logIn(request)
+            val result = sut.login(request, httpRequest)
 
             // then
             assertThat(result).isNotNull
