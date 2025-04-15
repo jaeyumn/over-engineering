@@ -17,15 +17,18 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(
     private val authService: AuthService
 ) {
-    @PostMapping("/log-in")
-    fun logIn(@Valid @RequestBody request: UserLogInRequest): ResponseEntity<ApiResponse<UserResponse>> {
-        val response = authService.logIn(request)
+    @PostMapping("/login")
+    fun login(
+        @Valid @RequestBody request: UserLogInRequest,
+        httpRequest: HttpServletRequest
+    ): ResponseEntity<ApiResponse<UserResponse>> {
+        val response = authService.login(request, httpRequest)
         return ResponseEntity.ok(ApiResponse.success(response))
     }
 
-    @PostMapping("/log-out")
-    fun logOut(request: HttpServletRequest): ResponseEntity<ApiResponse<Nothing>> {
-        authService.logOut(request)
+    @PostMapping("/logout")
+    fun logout(request: HttpServletRequest): ResponseEntity<ApiResponse<Nothing>> {
+        authService.logout(request)
         return ResponseEntity.ok(ApiResponse.success())
     }
 }
