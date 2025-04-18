@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import noul.oe.common.entity.BaseEntity
 
 @Entity
+@Table(name = "post", catalog = "post_db")
 class Post(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
