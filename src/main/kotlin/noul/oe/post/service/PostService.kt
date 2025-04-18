@@ -11,6 +11,8 @@ import noul.oe.post.exception.PostNotFoundException
 import noul.oe.post.exception.PostPermissionDeniedException
 import noul.oe.post.repository.PostLikeRepository
 import noul.oe.post.repository.PostRepository
+import noul.oe.user.exception.UserNotFoundException
+import noul.oe.user.repository.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional
 class PostService(
     private val postRepository: PostRepository,
     private val postLikeRepository: PostLikeRepository,
+    private val userRepository: UserRepository,
 ) {
     @Transactional
     fun create(userId: String, request: PostCreateRequest) {
@@ -35,8 +38,11 @@ class PostService(
     }
 
     fun readAll(pageable: Pageable): Page<PostPageResponse> {
-        return postRepository.findAll(pageable)
-            .map { PostPageResponse.from(it) }
+        return postRepository.findAll(pageable).map { post ->
+            val username = fetchUsernameByUserId(post.userId)
+            val commentCount = 0
+            PostPageResponse.from(post, username, commentCount)
+        }
     }
 
     @Transactional
@@ -75,7 +81,13 @@ class PostService(
         val like = postLikeRepository.findByUserIdAndPostId(userId, postId) ?: return
 
         postLikeRepository.delete(like)
-        post.decreaseLikeCount();
+        post.decreaseLikeCount()
+    }
+
+    fun fetchUsernameByUserId(userId: String): String {
+        val user = userRepository.findById(userId)
+            .orElseThrow { UserNotFoundException() }
+        return user.username
     }
 
     // 게시글 작성자 여부 확인
