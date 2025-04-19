@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDateTime
 
 @WebMvcTest(PostController::class)
 @Import(SecurityTestConfig::class)
@@ -71,14 +72,27 @@ class PostControllerTest {
 
     @Test
     fun readAllTest() {
-        val response = PageImpl(listOf(PostPageResponse(postId, "title")))
+        val response = PageImpl(
+            listOf(
+                PostPageResponse(
+                    postId = postId, title = "title", content = "test content", username = "testuser", createdAt = LocalDateTime.now(),
+                    likeCount = 5, commentCount = 2, viewCount = 10
+                )
+            )
+        )
         whenever(postService.readAll(any())).thenReturn(response)
 
         mockMvc.perform(get("/api/posts"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.data.content").isArray)
+            .andExpect(jsonPath("$.data.content[0].postId").value(postId))
             .andExpect(jsonPath("$.data.content[0].title").value("title"))
+            .andExpect(jsonPath("$.data.content[0].content").value("test content"))
+            .andExpect(jsonPath("$.data.content[0].username").value("testuser"))
+            .andExpect(jsonPath("$.data.content[0].likeCount").value(5))
+            .andExpect(jsonPath("$.data.content[0].commentCount").value(2))
+            .andExpect(jsonPath("$.data.content[0].viewCount").value(10))
     }
 
     @Test
