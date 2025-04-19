@@ -11,6 +11,8 @@ import noul.oe.post.exception.PostNotFoundException
 import noul.oe.post.exception.PostPermissionDeniedException
 import noul.oe.post.repository.PostLikeRepository
 import noul.oe.post.repository.PostRepository
+import noul.oe.user.entity.User
+import noul.oe.user.repository.UserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -27,6 +29,7 @@ class PostServiceTest {
     private lateinit var sut: PostService
     private lateinit var postRepository: PostRepository
     private lateinit var postLikeRepository: PostLikeRepository
+    private lateinit var userRepository: UserRepository
 
     private val userId = "testuser"
     private val postId = 1L
@@ -35,7 +38,8 @@ class PostServiceTest {
     fun setUp() {
         postRepository = mock<PostRepository>()
         postLikeRepository = mock<PostLikeRepository>()
-        sut = PostService(postRepository, postLikeRepository)
+        userRepository = mock<UserRepository>()
+        sut = PostService(postRepository, postLikeRepository, userRepository)
     }
 
     @Nested
@@ -105,22 +109,42 @@ class PostServiceTest {
             // given
             val anotherPostId = 2L
             val pageable = PageRequest.of(0, 10)
+
             val post1 = mock<Post> {
                 on { id } doReturn postId
                 on { title } doReturn "title"
+                on { content } doReturn "test content"
+                on { createdAt } doReturn LocalDateTime.now()
+                on { likeCount } doReturn 5L
+                on { viewCount } doReturn 100L
+                on { userId } doReturn userId
             }
+
             val post2 = mock<Post> {
                 on { id } doReturn anotherPostId
                 on { title } doReturn "another title"
+                on { content } doReturn "another content"
+                on { createdAt } doReturn LocalDateTime.now()
+                on { likeCount } doReturn 0L
+                on { viewCount } doReturn 0L
+                on { userId } doReturn "another user"
             }
+
             val page = PageImpl(listOf(post1, post2))
             whenever(postRepository.findAll(pageable)).thenReturn(page)
+
+            val user = mock<User> {
+                on { username } doReturn "user"
+            }
+            whenever(userRepository.findById(any())).thenReturn(Optional.of(user))
 
             // when
             val result = sut.readAll(pageable)
 
             // then
             assertThat(result.content).hasSize(2)
+            assertThat(result.content[0].title).isEqualTo("title")
+            assertThat(result.content[1].title).isEqualTo("another title")
         }
     }
 
