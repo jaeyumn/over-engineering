@@ -7,21 +7,21 @@ import noul.oe.comment.exception.CommentErrorCode.UNAUTHORIZED_COMMENT_ACCESS
 import noul.oe.comment.exception.CommentNotFoundException
 import noul.oe.comment.exception.UnauthorizedCommentAccessException
 import noul.oe.comment.repository.CommentRepository
+import noul.oe.user.entity.User
+import noul.oe.user.repository.UserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import java.util.*
 
 class CommentServiceTest {
     private lateinit var sut: CommentService
     private lateinit var commentRepository: CommentRepository
+    private lateinit var userRepository: UserRepository
 
     private val postId = 1L
     private val commentId = 10L
@@ -31,7 +31,9 @@ class CommentServiceTest {
     @BeforeEach
     fun setUp() {
         commentRepository = mock<CommentRepository>()
-        sut = CommentService(commentRepository)
+        userRepository = mock<UserRepository>()
+
+        sut = CommentService(commentRepository, userRepository)
     }
 
     @Nested
@@ -52,6 +54,38 @@ class CommentServiceTest {
             assertThat(result.content).isEqualTo("내용")
             verify(commentRepository).save(any())
         }
+
+        @Test
+        @DisplayName("답글 생성에 성공한다")
+        fun test200() {
+            // given
+            val parentComment = Comment(
+                id = commentId,
+                content = "부모 댓글",
+                postId = postId,
+                userId = "parent-user-id",
+                parentId = null
+            )
+            whenever(commentRepository.findById(commentId)).thenReturn(Optional.of(parentComment))
+
+            val request = CommentCreateRequest("대댓글입니다")
+            val savedReply = Comment(
+                id = 99L,
+                content = request.content,
+                postId = postId,
+                userId = userId,
+                parentId = commentId
+            )
+            whenever(commentRepository.save(any<Comment>())).thenReturn(savedReply)
+
+            val result = sut.reply(commentId, userId, request)
+
+            // then
+            assertThat(result.content).isEqualTo("대댓글입니다")
+            assertThat(result.userId).isEqualTo(userId)
+            assertThat(result.id).isEqualTo(99L)
+            assertThat(result.children).isEmpty()
+        }
     }
 
     @Nested
@@ -64,11 +98,17 @@ class CommentServiceTest {
             val reply1 = Comment(2L, "대댓글1", postId, userId, 1L)
             val comment2 = Comment(3L, "댓글2", postId, userId)
             val commentList = listOf(comment1, reply1, comment2)
-
             whenever(commentRepository.findAllByPostId(postId)).thenReturn(commentList)
 
+            val user = mock<User> {
+                on { id } doReturn userId
+                on { username } doReturn "test user"
+            }
+            whenever(userRepository.findById(any())).thenReturn(Optional.of(user))
+            whenever(userRepository.findAllById(setOf(userId))).thenReturn(listOf(user))
+
             // when
-            val result = sut.readAll(postId)
+            val result = sut.readAll(postId, userId)
 
             // then
             assertThat(result).hasSize(2)

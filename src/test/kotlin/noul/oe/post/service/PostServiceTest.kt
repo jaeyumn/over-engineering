@@ -1,5 +1,6 @@
 package noul.oe.post.service
 
+import noul.oe.comment.repository.CommentRepository
 import noul.oe.post.dto.request.PostCreateRequest
 import noul.oe.post.dto.request.PostModifyRequest
 import noul.oe.post.entity.Post
@@ -30,6 +31,7 @@ class PostServiceTest {
     private lateinit var postRepository: PostRepository
     private lateinit var postLikeRepository: PostLikeRepository
     private lateinit var userRepository: UserRepository
+    private lateinit var commentRepository: CommentRepository
 
     private val userId = "testuser"
     private val postId = 1L
@@ -39,7 +41,8 @@ class PostServiceTest {
         postRepository = mock<PostRepository>()
         postLikeRepository = mock<PostLikeRepository>()
         userRepository = mock<UserRepository>()
-        sut = PostService(postRepository, postLikeRepository, userRepository)
+        commentRepository = mock<CommentRepository>()
+        sut = PostService(postRepository, postLikeRepository, userRepository, commentRepository)
     }
 
     @Nested
@@ -69,7 +72,7 @@ class PostServiceTest {
             whenever(postRepository.findById(postId)).thenReturn(Optional.empty())
 
             // when & then
-            assertThatThrownBy { sut.read(postId) }
+            assertThatThrownBy { sut.read(postId, userId) }
                 .isInstanceOf(PostNotFoundException::class.java)
                 .hasMessageContaining(POST_NOT_FOUND.message)
         }
@@ -93,7 +96,7 @@ class PostServiceTest {
             whenever(postRepository.findById(postId)).thenReturn(Optional.of(post))
 
             // when
-            val result = sut.read(postId)
+            val result = sut.read(postId, userId)
 
             // then
             verify(post).increaseViewCount()
