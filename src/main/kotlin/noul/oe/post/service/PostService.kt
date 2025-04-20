@@ -1,5 +1,6 @@
 package noul.oe.post.service
 
+import noul.oe.comment.repository.CommentRepository
 import noul.oe.post.dto.request.PostCreateRequest
 import noul.oe.post.dto.request.PostModifyRequest
 import noul.oe.post.dto.response.PostDetailResponse
@@ -24,6 +25,7 @@ class PostService(
     private val postRepository: PostRepository,
     private val postLikeRepository: PostLikeRepository,
     private val userRepository: UserRepository,
+    private val commentRepository: CommentRepository,
 ) {
     @Transactional
     fun create(userId: String, request: PostCreateRequest) {
@@ -31,10 +33,16 @@ class PostService(
         postRepository.save(post)
     }
 
-    fun read(postId: Long): PostDetailResponse {
+    fun read(postId: Long, userId: String): PostDetailResponse {
         val post = postRepository.findById(postId).orElseThrow { PostNotFoundException() }
         post.increaseViewCount()
-        return PostDetailResponse.from(post)
+
+        val user = userRepository.findById(post.userId).orElseThrow { UserNotFoundException() }
+        val likeCount = post.likeCount
+        val commentCount = commentRepository.countByPostId(postId)
+        val liked = postLikeRepository.existsByUserIdAndPostId(userId, postId)
+
+        return PostDetailResponse.from(post, user, likeCount, commentCount, liked)
     }
 
     fun readAll(pageable: Pageable): Page<PostPageResponse> {

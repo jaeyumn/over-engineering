@@ -6,6 +6,7 @@ import noul.oe.comment.dto.request.CommentModifyRequest
 import noul.oe.comment.dto.response.CommentResponse
 import noul.oe.comment.service.CommentService
 import noul.oe.config.SecurityTestConfig
+import noul.oe.user.service.UserService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -32,8 +33,12 @@ class CommentControllerTest {
     @MockBean
     private lateinit var commentService: CommentService
 
+    @MockBean
+    private lateinit var userService: UserService
+
     private val objectMapper = ObjectMapper()
-    private val userId = "testuser"
+    private val userId = "testId"
+    private val username = "testuser"
     private val postId = 1L
     private val commentId = 10L
 
@@ -46,10 +51,13 @@ class CommentControllerTest {
             id = commentId,
             content = request.content,
             userId = userId,
+            username = username,
+            editable = true,
             createdAt = LocalDateTime.now(),
             children = emptyList()
         )
         whenever(commentService.create(eq(postId), eq(userId), any())).thenReturn(response)
+        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
 
         // when & then
         mockMvc.perform(
@@ -60,11 +68,14 @@ class CommentControllerTest {
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.data.content").value("댓글입니다"))
+            .andExpect(jsonPath("$.data.username").value(username))
+            .andExpect(jsonPath("$.data.editable").value(true))
 
         verify(commentService).create(eq(postId), eq(userId), any())
     }
 
     @Test
+    @WithMockUser(username = "testuser")
     fun readAllTest() {
         // given
         val response = listOf(
@@ -72,19 +83,24 @@ class CommentControllerTest {
                 id = 1L,
                 content = "댓글1",
                 userId = userId,
+                username = username,
+                editable = true,
                 createdAt = LocalDateTime.now(),
                 children = listOf(
                     CommentResponse(
                         id = 2L,
                         content = "대댓글1",
                         userId = userId,
+                        username = username,
+                        editable = true,
                         createdAt = LocalDateTime.now(),
                         children = emptyList()
                     )
                 )
             )
         )
-        whenever(commentService.readAll(postId)).thenReturn(response)
+        whenever(commentService.readAll(eq(postId), eq(userId))).thenReturn(response)
+        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
 
         // when & then
         mockMvc.perform(get("/api/posts/{postId}/comments", postId))
@@ -92,7 +108,39 @@ class CommentControllerTest {
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.data").isArray)
             .andExpect(jsonPath("$.data[0].content").value("댓글1"))
+            .andExpect(jsonPath("$.data[0].username").value(username))
+            .andExpect(jsonPath("$.data[0].editable").value(true))
             .andExpect(jsonPath("$.data[0].children[0].content").value("대댓글1"))
+    }
+
+    @Test
+    @WithMockUser(username = "testuser")
+    fun replyTest() {
+        // given
+        val request = CommentCreateRequest("대댓글입니다")
+        val response = CommentResponse(
+            id = 10L,
+            content = request.content,
+            userId = userId,
+            username = username,
+            editable = true,
+            createdAt = LocalDateTime.now(),
+            children = emptyList()
+        )
+        whenever(commentService.reply(eq(commentId), eq(userId), any())).thenReturn(response)
+        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
+
+        // when & then
+        mockMvc.perform(
+            post("/api/comments/{commentId}/replies", commentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.content").value("대댓글입니다"))
+
+        verify(commentService).reply(eq(commentId), eq(userId), any())
     }
 
     @Test
@@ -100,6 +148,8 @@ class CommentControllerTest {
     fun modifyTest() {
         // given
         val request = CommentModifyRequest("수정된 내용")
+
+        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
 
         // when & then
         mockMvc.perform(
@@ -115,7 +165,10 @@ class CommentControllerTest {
 
     @Test
     @WithMockUser(username = "testuser")
-    fun deleteTest() {
+    fun removeTest() {
+        // given
+        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
+
         // when & then
         mockMvc.perform(delete("/api/comments/{commentId}", commentId))
             .andExpect(status().isOk)

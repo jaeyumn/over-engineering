@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 @Service
 class CustomUserDetailsService(
     private val userRepository: UserRepository
-) : UserDetailsService{
+) : UserDetailsService {
     override fun loadUserByUsername(username: String): UserDetails {
         val user = userRepository.findByUsername(username) ?: throw UserNotFoundException()
         return CustomUserDetails(user)
@@ -22,16 +22,10 @@ class CustomUserDetailsService(
 class CustomUserDetails(
     private val user: User
 ) : UserDetails {
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        return mutableListOf(SimpleGrantedAuthority("ROLE_${user.role.name}"))
-    }
+    fun getUserId(): String = user.id
 
-    override fun getPassword(): String {
-        return user.password
-    }
-
-    override fun getUsername(): String {
-        return user.username
-    }
-
+    override fun getUsername(): String = user.username
+    override fun getPassword(): String = user.password
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> =
+        mutableListOf(SimpleGrantedAuthority("ROLE_${user.role.name}"))
 }

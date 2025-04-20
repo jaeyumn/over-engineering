@@ -7,6 +7,7 @@ import noul.oe.post.dto.request.PostModifyRequest
 import noul.oe.post.dto.response.PostDetailResponse
 import noul.oe.post.dto.response.PostPageResponse
 import noul.oe.post.service.PostService
+import noul.oe.user.service.UserService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -35,8 +36,12 @@ class PostControllerTest {
     @MockBean
     private lateinit var postService: PostService
 
+    @MockBean
+    private lateinit var userService: UserService
+
     private val objectMapper = ObjectMapper()
-    private val userId = "testuser"
+    private val userId = "testId"
+    private val username = "testuser"
     private val postId = 1L
 
     @Test
@@ -44,6 +49,8 @@ class PostControllerTest {
     fun createTest() {
         // given
         val request = PostCreateRequest("title", "content")
+
+        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
 
         // when & then
         mockMvc.perform(
@@ -58,29 +65,47 @@ class PostControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser")
     fun readTest() {
         // given
-        val response = PostDetailResponse(postId, userId, "title", "content", 10L, 2L)
-        whenever(postService.read(postId)).thenReturn(response)
+        val response = PostDetailResponse(
+            postId = postId,
+            userId = userId,
+            username = username,
+            title = "title",
+            content = "content",
+            viewCount = 10L,
+            likeCount = 2L,
+            commentCount = 5L,
+            liked = true,
+            createdAt = LocalDateTime.now()
+        )
+        whenever(postService.read(postId, userId)).thenReturn(response)
+        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
 
         // when & then
-        mockMvc.perform(get("/api/posts/${postId}", postId))
+        mockMvc.perform(get("/api/posts/{postId}", postId))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.data.title").value("title"))
+            .andExpect(jsonPath("$.data.username").value("testuser"))
+            .andExpect(jsonPath("$.data.liked").value(true))
     }
 
     @Test
     fun readAllTest() {
+        // given
         val response = PageImpl(
             listOf(
                 PostPageResponse(
-                    postId = postId, title = "title", content = "test content", username = "testuser", createdAt = LocalDateTime.now(),
+                    postId = postId, title = "title", content = "test content", username = username, createdAt = LocalDateTime.now(),
                     likeCount = 5, commentCount = 2, viewCount = 10
                 )
             )
         )
         whenever(postService.readAll(any())).thenReturn(response)
+
+        // when & then
 
         mockMvc.perform(get("/api/posts"))
             .andExpect(status().isOk)
@@ -98,8 +123,12 @@ class PostControllerTest {
     @Test
     @WithMockUser(username = "testuser")
     fun modifyTest() {
+        // given
         val request = PostModifyRequest("new title", "new content")
 
+        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
+
+        // when & then
         mockMvc.perform(
             put("/api/posts/{postId}", postId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -114,6 +143,10 @@ class PostControllerTest {
     @Test
     @WithMockUser(username = "testuser")
     fun deleteTest() {
+        // given
+        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
+
+        // when & then
         mockMvc.perform(delete("/api/posts/{postId}", postId))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
@@ -124,6 +157,10 @@ class PostControllerTest {
     @Test
     @WithMockUser(username = "testuser")
     fun likePost_success() {
+        // given
+        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
+
+        // when & then
         mockMvc.perform(post("/api/posts/{postId}/like", postId))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
@@ -134,6 +171,10 @@ class PostControllerTest {
     @Test
     @WithMockUser(username = "testuser")
     fun unlikePost_success() {
+        // given
+        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
+
+        // when & then
         mockMvc.perform(delete("/api/posts/{postId}/like", postId))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))

@@ -6,15 +6,18 @@ import noul.oe.comment.dto.request.CommentModifyRequest
 import noul.oe.comment.dto.response.CommentResponse
 import noul.oe.comment.service.CommentService
 import noul.oe.common.response.ApiResponse
+import noul.oe.user.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
-import java.security.Principal
 
 @RestController
 @RequestMapping("/api")
 class CommentController(
-    private val commentService: CommentService
+    private val commentService: CommentService,
+    private val userService: UserService,
 ) {
     /**
      * 댓글 생성
@@ -23,10 +26,24 @@ class CommentController(
     fun create(
         @PathVariable postId: Long,
         @RequestBody @Valid request: CommentCreateRequest,
-        principal: Principal
+        @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<ApiResponse<CommentResponse>> {
-        val userId = principal.name
+        val userId = userService.getUserIdByUsername(user.username)
         val response = commentService.create(postId, userId, request)
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response))
+    }
+
+    /**
+     * 답글 생성
+     */
+    @PostMapping("/comments/{commentId}/replies")
+    fun reply(
+        @PathVariable commentId: Long,
+        @RequestBody @Valid request: CommentCreateRequest,
+        @AuthenticationPrincipal user: UserDetails
+    ): ResponseEntity<ApiResponse<CommentResponse>> {
+        val userId = userService.getUserIdByUsername(user.username)
+        val response = commentService.reply(commentId, userId, request)
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response))
     }
 
@@ -34,8 +51,12 @@ class CommentController(
      * 댓글 조회
      */
     @GetMapping("/posts/{postId}/comments")
-    fun readAll(@PathVariable postId: Long): ResponseEntity<ApiResponse<List<CommentResponse>>> {
-        val response = commentService.readAll(postId)
+    fun readAll(
+        @PathVariable postId: Long,
+        @AuthenticationPrincipal user: UserDetails
+    ): ResponseEntity<ApiResponse<List<CommentResponse>>> {
+        val userId = userService.getUserIdByUsername(user.username)
+        val response = commentService.readAll(postId, userId)
         return ResponseEntity.ok(ApiResponse.success(response))
     }
 
@@ -46,9 +67,9 @@ class CommentController(
     fun modify(
         @PathVariable commentId: Long,
         @RequestBody @Valid request: CommentModifyRequest,
-        principal: Principal
+        @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<ApiResponse<Nothing>> {
-        val userId = principal.name
+        val userId = userService.getUserIdByUsername(user.username)
         commentService.modify(commentId, userId, request.content)
         return ResponseEntity.ok(ApiResponse.success())
     }
@@ -59,9 +80,9 @@ class CommentController(
     @DeleteMapping("/comments/{commentId}")
     fun remove(
         @PathVariable commentId: Long,
-        principal: Principal
+        @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<ApiResponse<Nothing>> {
-        val userId = principal.name
+        val userId = userService.getUserIdByUsername(user.username)
         commentService.remove(commentId, userId)
         return ResponseEntity.ok(ApiResponse.success())
     }
