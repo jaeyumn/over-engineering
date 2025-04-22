@@ -7,6 +7,6 @@ enum class CommonErrorCode(
     override val message: String,
     override val status: HttpStatus,
 ) : ErrorCode {
-    INVALID_INPUT("INVALID_INPUT", "Invalid input provided.", HttpStatus.BAD_REQUEST),
-    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "An unexpected error occurred.", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_INPUT("INVALID_INPUT", "유효하지 않은 값입니다.", HttpStatus.BAD_REQUEST),
+    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "서버에서 오류가 발생하였습니다. 관리자에게 문의하세요.", HttpStatus.INTERNAL_SERVER_ERROR),
 }
