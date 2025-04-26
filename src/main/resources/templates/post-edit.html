@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'글 수정 - '+${post.title}">글 수정 - OE SNS</title>
+    <title th:text="|${post.title} - OE SNS|">OE - Post</title>
+    <link rel="stylesheet" th:href="@{/css/page/post-list.css}">
+    <link rel="stylesheet" th:href="@{/css/page/post-write.css}">
+    <link rel="stylesheet" th:href="@{/css/common/snackbar.css}">
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar"></div>
+    <div class="container">
+        <div class="header">
+            <div class="logo">OE SNS</div>
+            <div class="user-menu">☰</div>
+            <div class="dropdown-menu">
+                <a th:href="@{/profile}" class="dropdown-item">프로필</a>
+                <a th:href="@{/logout}" class="dropdown-item">로그아웃</a>
+            </div>
+        </div>
+
+        <div class="write-container">
+            <h1 class="write-title">글 수정</h1>
+            <form id="editForm" th:data-post-id="${post.postId}" th:action="@{/post/edit/{id}(id=${post.postId})}" method="POST">
+                <input type="hidden" name="_method" value="PUT">
+                <div class="form-group">
+                    <input type="text" id="title" name="title" class="form-input"
+                           th:value="${post.title}" placeholder="제목을 입력하세요" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="content" name="content" class="form-textarea"
+                              placeholder="내용을 입력하세요" required th:text="${post.content}"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" onclick="history.back()">취소</button>
+                    <button type="submit" class="submit-btn">수정</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="sidebar"></div>
+</div>
+
+<script th:src="@{/js/page/post-edit.js}"></script>
+<script th:src="@{/js/common/snackbar.js}"></script>
+</body>
+</html>

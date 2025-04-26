@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OE SNS - 회원가입</title>
+    <link rel="stylesheet" th:href="@{/css/common/snackbar.css}">
+    <link rel="stylesheet" th:href="@{/css/page/signup.css}">
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar"></div>
+    <div class="container">
+        <div class="header">
+            <div class="logo">OE SNS</div>
+        </div>
+
+        <div class="signup-container">
+            <h1>회원가입</h1>
+            <form id="signupForm" th:action="@{/api/auth/signup}" method="POST">
+                <div class="form-group">
+                    <label for="username">사용자 이름</label>
+                    <input type="text" id="username" name="username" required
+                           minlength="3" maxlength="50"
+                           placeholder="3~50자 사이로 입력해주세요">
+                    <div class="error-message" id="username-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">이메일</label>
+                    <input type="email" id="email" name="email" required
+                           placeholder="example@example.com">
+                    <div class="error-message" id="email-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">비밀번호</label>
+                    <input type="password" id="password" name="password" required
+                           minlength="3" maxlength="255"
+                           placeholder="3자 이상 입력해주세요">
+                    <div class="error-message" id="password-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="passwordConfirm">비밀번호 확인</label>
+                    <input type="password" id="passwordConfirm" required
+                           placeholder="비밀번호를 다시 입력해주세요">
+                    <div class="error-message" id="passwordConfirm-error"></div>
+                </div>
+
+                <button type="submit" class="signup-btn">가입하기</button>
+            </form>
+
+            <div class="login-link">
+                이미 계정이 있으신가요? <a th:href="@{/login}">로그인</a>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar"></div>
+</div>
+
+<script th:src="@{/js/common/snackbar.js}"></script>
+<script th:src="@{/js/page/signup.js}"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="|${post.title} - OE SNS|">OE - Post</title>
+    <link rel="stylesheet" th:href="@{/css/page/post-detail.css}">
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar"></div>
+    <div class="container">
+        <div class="header">
+            <a th:href="@{/posts}" class="back-btn">←</a>
+            <div class="post-options">⋮
+                <div class="post-options-menu" th:if="${post.editable}">
+                    <button class="edit-post">수정하기</button>
+                    <button class="delete-post">삭제하기</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="post-detail">
+            <div class="post-header">
+                <div class="post-author-img" style="background-image: url('/images/profile.png')"></div>
+                <div class="post-author-info">
+                    <div class="post-author" th:text="${post.username}">작성자</div>
+                    <div class="post-time" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">작성시간</div>
+                </div>
+            </div>
+            <div class="post-content">
+                <h1 class="post-title" th:text="${post.title}">제목</h1>
+                <p class="post-text" th:text="${post.content}">내용</p>
+            </div>
+            <div class="post-stats">
+                <div class="post-likes" th:classappend="${post.liked} ? ' active'"
+                     th:attr="data-post-id=${post.postId}">
+                    ♥ <span th:text="${post.likeCount}">0</span>
+                </div>
+                <div class="post-comments">💬 <span th:text="${post.commentCount}">0</span></div>
+                <div class="post-views">👁️ <span th:text="${post.viewCount}">0</span></div>
+            </div>
+
+            <!-- 댓글 영역 -->
+            <div class="comment-input-area">
+                <label>
+                    <input type="text" class="comment-input" placeholder="댓글을 입력하세요."
+                           th:attr="data-post-id=${post.postId}"/>
+                </label>
+                <button class="comment-submit">게시</button>
+            </div>
+        </div>
+
+        <div class="comments-section">
+            <div class="comments-header" th:text="|댓글 ${#lists.size(comments)}개|">댓글 0개</div>
+
+            <div class="comment" th:each="comment : ${comments}">
+                <div class="comment-header">
+                    <div class="comment-author-img" style="background-image: url('/images/profile.png')"></div>
+                    <div class="comment-author-info">
+                        <div class="comment-author" th:text="${comment.username}">작성자</div>
+                        <div class="comment-time" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">
+                            작성시간
+                        </div>
+                    </div>
+                </div>
+                <div class="comment-text">
+                    <span class="comment-content" th:text="${comment.content}"
+                          th:attr="data-comment-id=${comment.id}"></span>
+                    <div class="comment-edit-container" th:attr="data-comment-id=${comment.id}">
+                        <label>
+                            <input type="text" class="comment-edit-input" th:attr="data-comment-id=${comment.id}"/>
+                        </label>
+                        <button class="comment-edit-submit">적용</button>
+                        <button class="comment-edit-cancel">취소</button>
+                    </div>
+                </div>
+                <div class="comment-actions">
+                    <div class="comment-reply" th:attr="data-comment-id=${comment.id}">답글 달기</div>
+                    <div class="comment-modify" th:if="${comment.editable}"
+                         th:attr="data-comment-id=${comment.id}">수정
+                    </div>
+                    <div class="comment-delete" th:if="${comment.editable}"
+                         th:attr="data-comment-id=${comment.id}">삭제
+                    </div>
+                </div>
+
+                <!-- 답글 영역 -->
+                <div class="reply-input-area">
+                    <label>
+                        <input type="text" class="reply-input" placeholder="답글을 입력하세요.."
+                               th:attr="data-comment-id=${comment.id}"/>
+                    </label>
+                    <button class="reply-submit">게시</button>
+                </div>
+
+                <!-- 대댓글 목록 -->
+                <div class="reply" th:each="child : ${comment.children}">
+                    <div class="comment-header">
+                        <div class="comment-author-img" style="background-image: url('/images/profile.png')"></div>
+                        <div class="comment-author-info">
+                            <div class="comment-author" th:text="${child.username}"/>
+                            <div class="comment-time"
+                                 th:text="${#temporals.format(child.createdAt, 'yyyy-MM-dd HH:mm')}"/>
+                        </div>
+                    </div>
+                    <div class="comment-text">
+        <span class="comment-content" th:text="${child.content}"
+              th:attr="data-comment-id=${child.id}"></span>
+                        <div class="comment-edit-container" th:attr="data-comment-id=${child.id}">
+                            <label>
+                                <input type="text" class="comment-edit-input" th:attr="data-comment-id=${child.id}"/>
+                            </label>
+                            <button class="comment-edit-submit">확인</button>
+                            <button class="comment-edit-cancel">취소</button>
+                        </div>
+                    </div>
+                    <div class="reply-actions" th:if="${child.editable}">
+                        <div class="reply-modify" th:attr="data-comment-id=${child.id}">수정</div>
+                        <div class="reply-delete" th:attr="data-comment-id=${child.id}">삭제</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar"></div>
+</div>
+
+<script th:src="@{/js/page/post-detail.js}"></script>
+</body>
+</html>
