@@ -76,9 +76,10 @@ class PostControllerTest {
             content = "content",
             viewCount = 10L,
             likeCount = 2L,
-            commentCount = 5L,
+            commentCount = 5,
             liked = true,
-            createdAt = LocalDateTime.now()
+            createdAt = LocalDateTime.now(),
+            editable = true
         )
         whenever(postService.read(postId, userId)).thenReturn(response)
         whenever(userService.getUserIdByUsername(username)).thenReturn(userId)

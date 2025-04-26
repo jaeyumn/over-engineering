@@ -78,6 +78,9 @@ class CommentService(
             throw UnauthorizedCommentAccessException()
         }
 
+        // 댓글과 관련된 답글까지 같이 삭제
+        val replies = commentRepository.findAllByParentId(commentId)
+        commentRepository.deleteAll(replies)
         commentRepository.delete(comment)
     }
 
