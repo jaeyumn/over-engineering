@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
     private val userService: UserService
 ) {
-    @PostMapping("/sign-up")
+    @PostMapping("/signup")
     fun signUp(@Valid @RequestBody request: UserSignUpRequest): ResponseEntity<ApiResponse<Nothing>> {
         userService.signUp(request)
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success())

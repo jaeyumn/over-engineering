@@ -1,0 +1,86 @@
+/* 글쓰기 컨테이너 */
+.write-container {
+background-color: white;
+border-radius: 12px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+padding: 25px;
+margin-bottom: 30px;
+}
+
+.write-title {
+font-size: 22px;
+font-weight: 600;
+margin-bottom: 25px;
+color: #333;
+}
+
+/* 폼 요소 스타일 */
+.form-group {
+margin-bottom: 20px;
+}
+
+.form-input {
+width: 100%;
+padding: 12px 15px;
+border: 1px solid #ddd;
+border-radius: 8px;
+font-size: 16px;
+margin-bottom: 15px;
+}
+
+.form-input:focus {
+border-color: #4285f4;
+outline: none;
+}
+
+.form-textarea {
+width: 100%;
+height: 300px;
+padding: 15px;
+border: 1px solid #ddd;
+border-radius: 8px;
+font-size: 14px;
+line-height: 1.6;
+resize: none;
+}
+
+.form-textarea:focus {
+border-color: #4285f4;
+outline: none;
+}
+
+/* 버튼 스타일 */
+.form-actions {
+display: flex;
+justify-content: flex-end;
+gap: 10px;
+margin-top: 20px;
+}
+
+.cancel-btn {
+padding: 10px 20px;
+background-color: #f5f5f5;
+color: #555;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 500;
+}
+
+.submit-btn {
+padding: 10px 20px;
+background-color: #4285f4;
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 500;
+}
+
+.cancel-btn:hover {
+background-color: #e9e9e9;
+}
+
+.submit-btn:hover {
+background-color: #3367d6;
+}

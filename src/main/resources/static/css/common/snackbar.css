@@ -1,0 +1,27 @@
+.snackbar {
+    min-width: 300px;
+    margin-left: -150px;
+    text-align: center;
+    border-radius: 8px;
+    padding: 18px 24px;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    bottom: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    transform: translateY(100%);
+    opacity: 0;
+    will-change: transform, opacity; /* 성능 최적화 */
+}
+
+.snackbar.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.snackbar.error { background-color: #f44336; }
+.snackbar.success { background-color: #4CAF50; }
+.snackbar.warning { background-color: #FF9800; }
+.snackbar.info { background-color: #2196F3; }

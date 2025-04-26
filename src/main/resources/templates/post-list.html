@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${username}+' - OE SNS'">OE - Posts</title>
+    <link rel="stylesheet" th:href="@{/css/common/snackbar.css}">
+    <link rel="stylesheet" th:href="@{/css/page/post-list.css}">
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar"></div>
+    <div class="container">
+        <div class="header">
+            <div class="logo">OE SNS</div>
+            <div class="user-menu">☰</div>
+            <div class="dropdown-menu">
+                <a th:href="@{#}" class="dropdown-item" onclick="showSnackbar('미구현 기능입니다. 관리자에게 문의하세요.', 'info'); return false;">내 정보</a>
+                <button class="dropdown-item logout-btn">로그아웃</button>
+            </div>
+        </div>
+
+        <div class="search-area">
+            <form class="search-form" th:action="@{/search}" method="GET">
+                <label>
+                    <input type="text" name="q" class="search-input" placeholder="검색어를 입력하세요">
+                </label>
+                <button type="submit" class="search-btn">검색</button>
+            </form>
+        </div>
+
+        <!-- 게시글 리스트 -->
+        <div th:each="post : ${posts}" class="post-card" th:attr="data-post-id=${post.postId}">
+            <div class="post-header">
+                <div class="post-author-img">
+                    <img src="/images/profile.png" alt="프로필 이미지">
+                </div>
+                <div class="post-author-info">
+                    <div class="post-author" th:text="${post.username}">작성자</div>
+                    <div class="post-time" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">작성 시간
+                    </div>
+                </div>
+            </div>
+            <div class="post-content">
+                <a th:href="@{/posts/{id}(id=${post.postId})}" style="text-decoration: none; color: inherit;">
+                    <h2 class="post-title" th:text="${post.title}">제목</h2>
+                    <p class="post-text" th:text="${post.content}">본문</p>
+                </a>
+            </div>
+            <div class="post-stats">
+                <div class="post-likes">♥ <span th:text="${post.likeCount}">0</span></div>
+                <div class="post-comments">💬 <span th:text="${post.commentCount}">0</span></div>
+                <div class="post-views">👁️ <span th:text="${post.viewCount}">0</span></div>
+            </div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination" th:if="${posts.totalPages > 1 || posts.totalElements >= 0}">
+            <div class="page-item" th:if="${!posts.first}">
+                <a th:href="@{/posts(page=${posts.number - 1})}" class="page-link prev">이전</a>
+            </div>
+            <div class="page-item" th:each="i : ${#numbers.sequence(0, T(java.lang.Math).max(posts.totalPages - 1, 0))}">
+                <a th:href="@{/posts(page=${i})}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == posts.number} ? 'active'" class="page-link">1</a>
+            </div>
+            <div class="page-item" th:if="${!posts.last}">
+                <a th:href="@{/posts(page=${posts.number + 1})}" class="page-link next">다음</a>
+            </div>
+        </div>
+
+        <div class="write-btn">+</div>
+    </div>
+    <div class="sidebar"></div>
+</div>
+
+<script th:src="@{/js/common/snackbar.js}"></script>
+<script th:src="@{/js/page/post-list.js}"></script>
+</body>
+</html>

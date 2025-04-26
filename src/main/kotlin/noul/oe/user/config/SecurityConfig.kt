@@ -27,7 +27,7 @@ class SecurityConfig(
             .authorizeHttpRequests {
                 it.requestMatchers(
                     "/api/users/signup", "/api/auth/login",
-                    "/", "/login",
+                    "/", "/login", "/signup",
                     "/css/**", "/js/**", "/images/**", "/favicon.ico",
                 ).permitAll()
                 it.anyRequest().authenticated()
