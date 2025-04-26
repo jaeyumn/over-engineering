@@ -33,6 +33,7 @@ class PostService(
         postRepository.save(post)
     }
 
+    @Transactional
     fun read(postId: Long, userId: String): PostDetailResponse {
         val post = postRepository.findById(postId).orElseThrow { PostNotFoundException() }
         post.increaseViewCount()
@@ -48,7 +49,7 @@ class PostService(
     fun readAll(pageable: Pageable): Page<PostPageResponse> {
         return postRepository.findAll(pageable).map { post ->
             val username = fetchUsernameByUserId(post.userId)
-            val commentCount = 0
+            val commentCount = commentRepository.countByPostId(post.id)
             PostPageResponse.from(post, username, commentCount)
         }
     }

@@ -13,12 +13,12 @@ data class PostDetailResponse(
     val content: String,
     val viewCount: Long,
     var likeCount: Long,
-    val commentCount: Long,
+    val commentCount: Int,
     val liked: Boolean,
     val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun from(post: Post, user: User, likeCount: Long, commentCount: Long, liked: Boolean): PostDetailResponse = PostDetailResponse(
+        fun from(post: Post, user: User, likeCount: Long, commentCount: Int, liked: Boolean): PostDetailResponse = PostDetailResponse(
             postId = post.id,
             userId = post.userId,
             username = user.username,

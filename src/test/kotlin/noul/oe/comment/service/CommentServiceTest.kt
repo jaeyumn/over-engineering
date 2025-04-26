@@ -57,7 +57,7 @@ class CommentServiceTest {
 
         @Test
         @DisplayName("답글 생성에 성공한다")
-        fun test200() {
+        fun test101() {
             // given
             val parentComment = Comment(
                 id = commentId,
@@ -162,20 +162,6 @@ class CommentServiceTest {
     @Nested
     inner class RemoveTests {
         @Test
-        @DisplayName("댓글 삭제에 성공한다")
-        fun test100() {
-            // given
-            val comment = Comment(commentId, "내용", postId, userId, null)
-            whenever(commentRepository.findById(commentId)).thenReturn(Optional.of(comment))
-
-            // when
-            sut.remove(commentId, userId)
-
-            // then
-            verify(commentRepository).delete(comment)
-        }
-
-        @Test
         @DisplayName("댓글 삭제에 실패한다 - 권한 없음")
         fun test1() {
             // given
@@ -198,6 +184,26 @@ class CommentServiceTest {
             assertThatThrownBy { sut.remove(commentId, userId) }
                 .isInstanceOf(CommentNotFoundException::class.java)
                 .hasMessageContaining(COMMENT_NOT_FOUND.message)
+        }
+
+        @Test
+        @DisplayName("댓글 삭제 시 대댓글까지 함께 삭제된다")
+        fun test100() {
+            // given
+            val parentComment = Comment(commentId, "내용", postId, userId, parentId = null)
+            val reply1 = Comment(2L, "대댓글1", postId, userId, parentId = commentId)
+            val reply2 = Comment(3L, "대댓글2", postId, userId, parentId = commentId)
+
+            whenever(commentRepository.findById(commentId)).thenReturn(Optional.of(parentComment))
+            whenever(commentRepository.findAllByParentId(commentId)).thenReturn(listOf(reply1, reply2))
+
+            // when
+            sut.remove(commentId, userId)
+
+            // then
+            verify(commentRepository).findAllByParentId(commentId)
+            verify(commentRepository).deleteAll(listOf(reply1, reply2))
+            verify(commentRepository).delete(parentComment)
         }
     }
 }
