@@ -93,6 +93,10 @@ class PostServiceTest {
                 on { modifiedAt } doReturn now
                 on { increaseViewCount() } doAnswer {}
             }
+            val user = mock<User> {
+                on { username } doReturn "test-username"
+            }
+            whenever(userRepository.findById(userId)).thenReturn(Optional.of(user))
             whenever(postRepository.findById(postId)).thenReturn(Optional.of(post))
 
             // when

@@ -30,7 +30,7 @@ class PostPageController(
         model.addAttribute("posts", posts)
         model.addAttribute("username", principal.name)
 
-        return "/post-list"
+        return "post-list"
     }
 
     @GetMapping("/posts/{postId}")
@@ -43,14 +43,14 @@ class PostPageController(
         model.addAttribute("comments", comments)
         model.addAttribute("username", principal.name)
 
-        return "/post-detail"
+        return "post-detail"
     }
 
     @GetMapping("/posts/write")
     fun write(model: Model, principal: Principal): String {
         model.addAttribute("username", principal.name)
 
-        return "/post-write"
+        return "post-write"
     }
 
     @GetMapping("/posts/{postId}/edit")
@@ -64,6 +64,6 @@ class PostPageController(
 
         model.addAttribute("post", post)
 
-        return "/post-edit"
+        return "post-edit"
     }
 }

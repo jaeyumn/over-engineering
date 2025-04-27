@@ -7,7 +7,11 @@ plugins {
 }
 
 group = "noul"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0"
+
+tasks.named<Jar>("jar") {
+	enabled = false
+}
 
 java {
 	toolchain {
