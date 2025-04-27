@@ -1,12 +1,18 @@
 package noul.oe.user.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import noul.oe.common.response.ApiResponse
 import noul.oe.config.SecurityTestConfig
 import noul.oe.user.dto.request.UserSignUpRequest
+import noul.oe.user.service.UserService
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doNothing
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
@@ -20,6 +26,9 @@ class UserControllerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
+    @MockBean
+    private lateinit var userService: UserService
+
     private val objectMapper = ObjectMapper()
 
     @Test
@@ -27,10 +36,11 @@ class UserControllerTest {
     fun signUpTest() {
         // given
         val request = UserSignUpRequest("testuser", "test@test.com", "password123")
+        doNothing().whenever(userService).signUp(any())
 
         // when & then
         mockMvc.perform(
-            post("/api/users/sign-up")
+            post("/api/users/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
         )
