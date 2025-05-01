@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import noul.oe.config.SecurityTestConfig
 import noul.oe.post.dto.request.PostCreateRequest
 import noul.oe.post.dto.request.PostModifyRequest
-import noul.oe.post.dto.response.PostDetailResponse
-import noul.oe.post.dto.response.PostPageResponse
 import noul.oe.post.service.PostService
 import noul.oe.user.service.UserService
 import org.junit.jupiter.api.Test
@@ -17,18 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
-import org.springframework.data.domain.PageImpl
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.time.LocalDateTime
 
-@WebMvcTest(PostController::class)
+@WebMvcTest(PostApiController::class)
 @Import(SecurityTestConfig::class)
-class PostControllerTest {
+class PostApiControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -62,63 +58,6 @@ class PostControllerTest {
             .andExpect(jsonPath("$.success").value(true))
 
         verify(postService).create(eq(userId), any())
-    }
-
-    @Test
-    @WithMockUser(username = "testuser")
-    fun readTest() {
-        // given
-        val response = PostDetailResponse(
-            postId = postId,
-            userId = userId,
-            username = username,
-            title = "title",
-            content = "content",
-            viewCount = 10L,
-            likeCount = 2L,
-            commentCount = 5,
-            liked = true,
-            createdAt = LocalDateTime.now(),
-            editable = true
-        )
-        whenever(postService.read(postId, userId)).thenReturn(response)
-        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
-
-        // when & then
-        mockMvc.perform(get("/api/posts/{postId}", postId))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.title").value("title"))
-            .andExpect(jsonPath("$.data.username").value("testuser"))
-            .andExpect(jsonPath("$.data.liked").value(true))
-    }
-
-    @Test
-    fun readAllTest() {
-        // given
-        val response = PageImpl(
-            listOf(
-                PostPageResponse(
-                    postId = postId, title = "title", content = "test content", username = username, createdAt = LocalDateTime.now(),
-                    likeCount = 5, commentCount = 2, viewCount = 10
-                )
-            )
-        )
-        whenever(postService.readAll(any())).thenReturn(response)
-
-        // when & then
-
-        mockMvc.perform(get("/api/posts"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.content").isArray)
-            .andExpect(jsonPath("$.data.content[0].postId").value(postId))
-            .andExpect(jsonPath("$.data.content[0].title").value("title"))
-            .andExpect(jsonPath("$.data.content[0].content").value("test content"))
-            .andExpect(jsonPath("$.data.content[0].username").value("testuser"))
-            .andExpect(jsonPath("$.data.content[0].likeCount").value(5))
-            .andExpect(jsonPath("$.data.content[0].commentCount").value(2))
-            .andExpect(jsonPath("$.data.content[0].viewCount").value(10))
     }
 
     @Test

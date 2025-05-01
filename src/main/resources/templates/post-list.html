@@ -55,19 +55,21 @@
         </div>
 
         <!-- 페이지네이션 -->
-        <div class="pagination" th:if="${posts.totalPages > 1 || posts.totalElements >= 0}">
-            <div class="page-item" th:if="${!posts.first}">
-                <a th:href="@{/posts(page=${posts.number - 1})}" class="page-link prev">이전</a>
+        <th:block th:if="${posts != null}">
+            <div class="pagination" th:if="${posts.totalPages > 1 || posts.totalElements >= 0}">
+                <div class="page-item" th:if="${!posts.first}">
+                    <a th:href="@{/posts(page=${posts.number - 1})}" class="page-link prev">이전</a>
+                </div>
+                <div class="page-item" th:each="i : ${#numbers.sequence(0, T(java.lang.Math).max(posts.totalPages - 1, 0))}">
+                    <a th:href="@{/posts(page=${i})}"
+                       th:text="${i + 1}"
+                       th:classappend="${i == posts.number} ? 'active'" class="page-link">1</a>
+                </div>
+                <div class="page-item" th:if="${!posts.last}">
+                    <a th:href="@{/posts(page=${posts.number + 1})}" class="page-link next">다음</a>
+                </div>
             </div>
-            <div class="page-item" th:each="i : ${#numbers.sequence(0, T(java.lang.Math).max(posts.totalPages - 1, 0))}">
-                <a th:href="@{/posts(page=${i})}"
-                   th:text="${i + 1}"
-                   th:classappend="${i == posts.number} ? 'active'" class="page-link">1</a>
-            </div>
-            <div class="page-item" th:if="${!posts.last}">
-                <a th:href="@{/posts(page=${posts.number + 1})}" class="page-link next">다음</a>
-            </div>
-        </div>
+        </th:block>
 
         <div class="write-btn">+</div>
     </div>

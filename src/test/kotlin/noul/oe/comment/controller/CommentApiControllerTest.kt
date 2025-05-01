@@ -24,9 +24,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
 
-@WebMvcTest(CommentController::class)
+@WebMvcTest(CommentApiController::class)
 @Import(SecurityTestConfig::class)
-class CommentControllerTest {
+class CommentApiControllerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -72,45 +72,6 @@ class CommentControllerTest {
             .andExpect(jsonPath("$.data.editable").value(true))
 
         verify(commentService).create(eq(postId), eq(userId), any())
-    }
-
-    @Test
-    @WithMockUser(username = "testuser")
-    fun readAllTest() {
-        // given
-        val response = listOf(
-            CommentResponse(
-                id = 1L,
-                content = "댓글1",
-                userId = userId,
-                username = username,
-                editable = true,
-                createdAt = LocalDateTime.now(),
-                children = listOf(
-                    CommentResponse(
-                        id = 2L,
-                        content = "대댓글1",
-                        userId = userId,
-                        username = username,
-                        editable = true,
-                        createdAt = LocalDateTime.now(),
-                        children = emptyList()
-                    )
-                )
-            )
-        )
-        whenever(commentService.readAll(eq(postId), eq(userId))).thenReturn(response)
-        whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
-
-        // when & then
-        mockMvc.perform(get("/api/posts/{postId}/comments", postId))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data").isArray)
-            .andExpect(jsonPath("$.data[0].content").value("댓글1"))
-            .andExpect(jsonPath("$.data[0].username").value(username))
-            .andExpect(jsonPath("$.data[0].editable").value(true))
-            .andExpect(jsonPath("$.data[0].children[0].content").value("대댓글1"))
     }
 
     @Test

@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/auth")
-class AuthController(
+class AuthApiController(
     private val authService: AuthService
 ) {
+    /**
+     * 로그인
+     */
     @PostMapping("/login")
     fun login(
         @Valid @RequestBody request: UserLogInRequest,
@@ -26,6 +29,9 @@ class AuthController(
         return ResponseEntity.ok(ApiResponse.success(response))
     }
 
+    /**
+     * 로그아웃
+     */
     @PostMapping("/logout")
     fun logout(request: HttpServletRequest): ResponseEntity<ApiResponse<Nothing>> {
         authService.logout(request)

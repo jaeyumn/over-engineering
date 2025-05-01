@@ -72,11 +72,4 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
-    // 페이지네이션
-    document.querySelectorAll('.page-link:not(.prev):not(.next)').forEach(link => {
-        link.addEventListener('click', function () {
-            console.log('페이지 이동:', this.textContent);
-        });
-    });
 });

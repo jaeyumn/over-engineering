@@ -1,7 +1,6 @@
 package noul.oe.user.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import noul.oe.common.response.ApiResponse
 import noul.oe.config.SecurityTestConfig
 import noul.oe.user.dto.request.UserSignUpRequest
 import noul.oe.user.service.UserService
@@ -20,9 +19,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@WebMvcTest(UserController::class)
+@WebMvcTest(UserApiController::class)
 @Import(SecurityTestConfig::class)
-class UserControllerTest {
+class UserApiControllerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 

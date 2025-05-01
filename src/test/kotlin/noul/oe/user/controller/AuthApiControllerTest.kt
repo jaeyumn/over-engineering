@@ -1,14 +1,11 @@
 package noul.oe.user.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import jakarta.servlet.http.HttpServletRequest
 import noul.oe.config.SecurityTestConfig
 import noul.oe.user.dto.request.UserLogInRequest
 import noul.oe.user.dto.response.UserResponse
 import noul.oe.user.service.AuthService
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -23,9 +20,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
 import java.util.*
 
-@WebMvcTest(AuthController::class)
+@WebMvcTest(AuthApiController::class)
 @Import(SecurityTestConfig::class)
-class AuthControllerTest {
+class AuthApiControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc

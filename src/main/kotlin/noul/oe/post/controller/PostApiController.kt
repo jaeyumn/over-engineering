@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/posts")
-class PostController(
+class PostApiController(
     private val postService: PostService,
     private val userService: UserService
 ) {
@@ -33,28 +33,6 @@ class PostController(
         val userId = userService.getUserIdByUsername(user.username)
         postService.create(userId, request)
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success())
-    }
-
-    /**
-     * 게시글 상세 조회
-     */
-    @GetMapping("/{postId}")
-    fun read(
-        @PathVariable postId: Long,
-        @AuthenticationPrincipal user: UserDetails
-    ): ResponseEntity<ApiResponse<PostDetailResponse>> {
-        val userId = userService.getUserIdByUsername(user.username)
-        val resposne = postService.read(postId, userId)
-        return ResponseEntity.ok(ApiResponse.success(resposne))
-    }
-
-    /**
-     * 게시글 목록 조회(페이징)
-     */
-    @GetMapping
-    fun readAll(pageable: Pageable): ResponseEntity<ApiResponse<Page<PostPageResponse>>> {
-        val response = postService.readAll(pageable)
-        return ResponseEntity.ok(ApiResponse.success(response))
     }
 
     /**
