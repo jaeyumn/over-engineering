@@ -1,7 +1,7 @@
 package noul.oe.comment.entity
 
 import jakarta.persistence.*
-import noul.oe.common.entity.BaseEntity
+import noul.oe.support.entity.BaseEntity
 
 @Entity
 @Table(name = "comment", catalog = "comment_db")

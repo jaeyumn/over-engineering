@@ -66,10 +66,9 @@ class CommentApiControllerTest {
                 .content(objectMapper.writeValueAsString(request))
         )
             .andExpect(status().isCreated)
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.content").value("댓글입니다"))
-            .andExpect(jsonPath("$.data.username").value(username))
-            .andExpect(jsonPath("$.data.editable").value(true))
+            .andExpect(jsonPath("$.content").value("댓글입니다"))
+            .andExpect(jsonPath("$.username").value(username))
+            .andExpect(jsonPath("$.editable").value(true))
 
         verify(commentService).create(eq(postId), eq(userId), any())
     }
@@ -98,8 +97,7 @@ class CommentApiControllerTest {
                 .content(objectMapper.writeValueAsString(request))
         )
             .andExpect(status().isCreated)
-            .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.content").value("대댓글입니다"))
+            .andExpect(jsonPath("$.content").value("대댓글입니다"))
 
         verify(commentService).reply(eq(commentId), eq(userId), any())
     }
@@ -118,8 +116,7 @@ class CommentApiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
         )
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(status().isNoContent)
 
         verify(commentService).modify(eq(commentId), eq(userId), eq("수정된 내용"))
     }
@@ -132,8 +129,7 @@ class CommentApiControllerTest {
 
         // when & then
         mockMvc.perform(delete("/api/comments/{commentId}", commentId))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(status().isNoContent)
 
         verify(commentService).remove(eq(commentId), eq(userId))
     }

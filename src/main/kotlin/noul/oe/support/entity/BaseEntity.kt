@@ -1,4 +1,4 @@
-package noul.oe.common.entity
+package noul.oe.support.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.EntityListeners

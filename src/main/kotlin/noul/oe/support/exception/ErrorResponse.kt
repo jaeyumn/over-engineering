@@ -1,6 +1,11 @@
-package noul.oe.common.exception
+package noul.oe.support.exception
 
 import org.springframework.http.HttpStatus
+
+data class ErrorResponse(
+    val code: String,
+    val message: String,
+)
 
 enum class CommonErrorCode(
     override val code: String,

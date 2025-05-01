@@ -26,11 +26,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: JSON.stringify(formData),
 
             }).then(response => {
-                console.log(response)
                 if (!response.ok) {
-                    return response.json().then(data => {
-                        showSnackbar(data.error?.message || '로그인 처리 중 오류가 발생했습니다.', 'error');
-                    })
+                    return response.json().then(error => {
+                        showSnackbar(error.message || '로그인 처리 중 오류가 발생했습니다.', 'error');
+                    });
 
                 } else {
                     showSnackbar('로그인 성공!', 'success');

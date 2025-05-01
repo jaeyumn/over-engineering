@@ -1,4 +1,4 @@
-package noul.oe.common.exception
+package noul.oe.support.exception
 
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank

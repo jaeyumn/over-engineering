@@ -19,7 +19,6 @@ import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(PostApiController::class)
@@ -55,7 +54,6 @@ class PostApiControllerTest {
                 .content(objectMapper.writeValueAsString(request))
         )
             .andExpect(status().isCreated)
-            .andExpect(jsonPath("$.success").value(true))
 
         verify(postService).create(eq(userId), any())
     }
@@ -74,8 +72,7 @@ class PostApiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
         )
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(status().isNoContent)
 
         verify(postService).modify(eq(userId), eq(postId), any())
     }
@@ -88,8 +85,7 @@ class PostApiControllerTest {
 
         // when & then
         mockMvc.perform(delete("/api/posts/{postId}", postId))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(status().isNoContent)
 
         verify(postService).remove(userId, postId)
     }
@@ -102,8 +98,7 @@ class PostApiControllerTest {
 
         // when & then
         mockMvc.perform(post("/api/posts/{postId}/like", postId))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(status().isNoContent)
 
         verify(postService).like(userId, postId)
     }
@@ -116,8 +111,7 @@ class PostApiControllerTest {
 
         // when & then
         mockMvc.perform(delete("/api/posts/{postId}/like", postId))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(status().isNoContent)
 
         verify(postService).unlike(userId, postId)
     }

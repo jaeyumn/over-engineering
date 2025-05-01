@@ -32,9 +32,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.getAttribute('content')
             }
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(error => {
+                        showSnackbar(error.message || '좋아요 처리 중 오류가 발생했습니다.', 'error');
+                    });
+
+                } else {
                     likeButton.classList.toggle('active');
                     if (likeButton.classList.contains('active')) {
                         likeButton.style.color = '#ff3b30';
@@ -68,7 +72,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 })
                     .then(response => {
-                        if (response.ok) {
+                        if (!response.ok) {
+                            return response.json().then(error => {
+                                showSnackbar(error.message || '게시글 삭제 처리 중 오류가 발생했습니다.', 'error');
+                            });
+
+                        } else {
                             window.location.href = '/posts';
                         }
                     })
@@ -176,7 +185,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     body: JSON.stringify({content: newContent})
                 })
                     .then(response => {
-                        if (response.ok) {
+                        if (!response.ok) {
+                            return response.json().then(error => {
+                                showSnackbar(error.message || '제출 처리 중 오류가 발생했습니다.', 'error');
+                            });
+
+                        } else {
                             window.location.reload();
                         }
                     })
@@ -197,7 +211,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 })
                     .then(response => {
-                        if (response.ok) {
+                        if (!response.ok) {
+                            return response.json().then(error => {
+                                showSnackbar(error.message || '삭제 처리 중 오류가 발생했습니다.', 'error');
+                            });
+
+                        } else {
                             window.location.reload();
                         }
                     })
@@ -218,7 +237,12 @@ function submitComment(postId, content) {
         body: JSON.stringify({content: content})
     })
         .then(response => {
-            if (response.ok) {
+            if (!response.ok) {
+                return response.json().then(error => {
+                    showSnackbar(error.message || '작성 처리 중 오류가 발생했습니다.', 'error');
+                });
+
+            } else {
                 window.location.reload();
             }
         })
@@ -236,7 +260,12 @@ function submitReply(commentId, content) {
         body: JSON.stringify({content: content})
     })
         .then(response => {
-            if (response.ok) {
+            if (!response.ok) {
+                return response.json().then(error => {
+                    showSnackbar(error.message || '작성 처리 중 오류가 발생했습니다.', 'error');
+                });
+
+            } else {
                 window.location.reload();
             }
         })

@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 로그아웃
     const logoutBtn = document.querySelector('.logout-btn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', async function(e) {
+        logoutBtn.addEventListener('click', async function (e) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -60,11 +60,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     credentials: 'include'
                 })
 
-                if (response.ok) {
-                    window.location.href = '/login';
+                if (!response.ok) {
+                    return response.json().then(error => {
+                        showSnackbar(error.message || '로그아웃 처리 중 오류가 발생했습니다.', 'error');
+                    });
+
                 } else {
-                    const error = await response.json();
-                    alert(error.message || '로그아웃에 실패했습니다.');
+                    window.location.href = '/login';
                 }
             } catch (error) {
                 console.error('로그아웃 에러: ', error);

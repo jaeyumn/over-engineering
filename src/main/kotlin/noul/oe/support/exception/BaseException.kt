@@ -1,4 +1,4 @@
-package noul.oe.common.exception
+package noul.oe.support.exception
 
 open class BaseException(
     val errorCode: ErrorCode,
