@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api")
-class CommentController(
+class CommentApiController(
     private val commentService: CommentService,
     private val userService: UserService,
 ) {
@@ -45,19 +45,6 @@ class CommentController(
         val userId = userService.getUserIdByUsername(user.username)
         val response = commentService.reply(commentId, userId, request)
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response))
-    }
-
-    /**
-     * 댓글 조회
-     */
-    @GetMapping("/posts/{postId}/comments")
-    fun readAll(
-        @PathVariable postId: Long,
-        @AuthenticationPrincipal user: UserDetails
-    ): ResponseEntity<ApiResponse<List<CommentResponse>>> {
-        val userId = userService.getUserIdByUsername(user.username)
-        val response = commentService.readAll(postId, userId)
-        return ResponseEntity.ok(ApiResponse.success(response))
     }
 
     /**
