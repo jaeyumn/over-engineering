@@ -1,7 +1,6 @@
 package noul.oe.user.controller
 
 import jakarta.validation.Valid
-import noul.oe.common.response.ApiResponse
 import noul.oe.user.dto.request.UserSignUpRequest
 import noul.oe.user.service.UserService
 import org.springframework.http.HttpStatus
@@ -20,8 +19,8 @@ class UserApiController(
      * 회원가입
      */
     @PostMapping("/signup")
-    fun signUp(@Valid @RequestBody request: UserSignUpRequest): ResponseEntity<ApiResponse<Nothing>> {
+    fun signUp(@Valid @RequestBody request: UserSignUpRequest): ResponseEntity<Void> {
         userService.signUp(request)
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success())
+        return ResponseEntity.status(HttpStatus.CREATED).build()
     }
 }

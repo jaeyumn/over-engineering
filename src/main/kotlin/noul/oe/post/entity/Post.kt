@@ -1,7 +1,7 @@
 package noul.oe.post.entity
 
 import jakarta.persistence.*
-import noul.oe.common.entity.BaseEntity
+import noul.oe.support.entity.BaseEntity
 
 @Entity
 @Table(name = "post", catalog = "post_db")

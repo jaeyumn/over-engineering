@@ -24,13 +24,14 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify(formData)
         })
             .then(response => {
-                if (response.ok) {
+                if (!response.ok) {
+                    return response.json().then(error => {
+                        showSnackbar(error.message || '수정 처리 중 오류가 발생했습니다.', 'error');
+                    });
+
+                } else {
                     showSnackbar('게시글이 수정되었습니다.', 'success');
                     setTimeout(() => window.location.href = `/posts/${postId}`, 500);
-                } else {
-                    return response.json().then(res => {
-                        showSnackbar(res.error?.message || '수정 실패', 'error');
-                    });
                 }
             })
             .catch(() => {

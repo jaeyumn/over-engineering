@@ -1,4 +1,4 @@
-package noul.oe.common.exception
+package noul.oe.support.exception
 
 import noul.oe.config.SecurityTestConfig
 import org.hamcrest.Matchers.containsString
@@ -31,9 +31,8 @@ class GlobalExceptionHandlerTest {
 
         mockMvc.perform(get("/api/test/base-exception"))
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.error.code").value(errorCode))
-            .andExpect(jsonPath("$.error.message").value(errorMessage))
+            .andExpect(jsonPath("$.code").value(errorCode))
+            .andExpect(jsonPath("$.message").value(errorMessage))
     }
 
     @Test
@@ -45,10 +44,9 @@ class GlobalExceptionHandlerTest {
                 .content("""{"name": "", "age": 0}""")
         )
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.error.code").value("INVALID_INPUT"))
-            .andExpect(jsonPath("$.error.message").value(containsString("이름은 필수입니다")))
-            .andExpect(jsonPath("$.error.message").value(containsString("나이는 1 이상이어야 합니다")))
+            .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+            .andExpect(jsonPath("$.message").value(containsString("이름은 필수입니다")))
+            .andExpect(jsonPath("$.message").value(containsString("나이는 1 이상이어야 합니다")))
     }
 
     @Test
@@ -56,9 +54,8 @@ class GlobalExceptionHandlerTest {
     fun test102() {
         mockMvc.perform(get("/api/test/internal-exception"))
             .andExpect(status().isInternalServerError)
-            .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.error.code").value("INTERNAL_SERVER_ERROR"))
-            .andExpect(jsonPath("$.error.message").value(containsString("테스트 오류 발생")))
+            .andExpect(jsonPath("$.code").value("INTERNAL_SERVER_ERROR"))
+            .andExpect(jsonPath("$.message").value(containsString("테스트 오류 발생")))
     }
 
     @Test
@@ -66,8 +63,7 @@ class GlobalExceptionHandlerTest {
     fun test103() {
         mockMvc.perform(get("/api/test/credentials-exception"))
             .andExpect(status().isUnauthorized)
-            .andExpect(jsonPath("$.success").value(false))
-            .andExpect(jsonPath("$.error.code").value("INVALID_CREDENTIALS"))
-            .andExpect(jsonPath("$.error.message").value("아이디 또는 비밀번호가 올바르지 않음"))
+            .andExpect(jsonPath("$.code").value("INVALID_CREDENTIALS"))
+            .andExpect(jsonPath("$.message").value("아이디 또는 비밀번호가 올바르지 않음"))
     }
 }

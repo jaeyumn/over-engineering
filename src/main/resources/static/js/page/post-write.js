@@ -24,13 +24,14 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify(formData)
         })
             .then(response => {
-                if (response.ok) {
+                if (!response.ok) {
+                    return response.json().then(error => {
+                        showSnackbar(error.message || '게시글 등록 처리 중 오류가 발생했습니다.', 'error');
+                    });
+
+                } else {
                     showSnackbar('게시글이 등록되었습니다.', 'success');
                     setTimeout(() => window.location.href = '/posts', 500);
-                } else {
-                    return response.json().then(res => {
-                        showSnackbar(res.error?.message || '등록 실패', 'error');
-                    });
                 }
             })
             .catch(() => {

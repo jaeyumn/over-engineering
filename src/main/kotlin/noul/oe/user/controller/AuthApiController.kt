@@ -2,7 +2,6 @@ package noul.oe.user.controller
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
-import noul.oe.common.response.ApiResponse
 import noul.oe.user.dto.request.UserLogInRequest
 import noul.oe.user.dto.response.UserResponse
 import noul.oe.user.service.AuthService
@@ -24,17 +23,17 @@ class AuthApiController(
     fun login(
         @Valid @RequestBody request: UserLogInRequest,
         httpRequest: HttpServletRequest
-    ): ResponseEntity<ApiResponse<UserResponse>> {
+    ): ResponseEntity<UserResponse> {
         val response = authService.login(request, httpRequest)
-        return ResponseEntity.ok(ApiResponse.success(response))
+        return ResponseEntity.ok(response)
     }
 
     /**
      * 로그아웃
      */
     @PostMapping("/logout")
-    fun logout(request: HttpServletRequest): ResponseEntity<ApiResponse<Nothing>> {
+    fun logout(request: HttpServletRequest): ResponseEntity<Void> {
         authService.logout(request)
-        return ResponseEntity.ok(ApiResponse.success())
+        return ResponseEntity.noContent().build()
     }
 }

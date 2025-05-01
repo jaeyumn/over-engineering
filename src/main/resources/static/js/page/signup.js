@@ -52,15 +52,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     })
                 });
 
-                if (response.ok) {
+                if (!response.ok) {
+                    return response.json().then(error => {
+                        showSnackbar(error.message || '회원가입 처리 중 오류가 발생했습니다.', 'error');
+                    });
+
+                } else {
                     showSnackbar('회원가입 성공!', 'success');
                     setTimeout(() => {
                         window.location.href = '/login';
                     }, 500);
-                } else {
-                    return response.json().then(data => {
-                        showSnackbar(data.error?.message || '회원가입 처리 중 오류가 발생했습니다.', 'error');
-                    })
                 }
             } catch (error) {
                 console.error('회원가입 에러:', error);

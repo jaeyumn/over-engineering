@@ -1,6 +1,6 @@
 package noul.oe.comment.exception
 
-import noul.oe.common.exception.ErrorCode
+import noul.oe.support.exception.ErrorCode
 import org.springframework.http.HttpStatus
 
 enum class CommentErrorCode(

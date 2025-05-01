@@ -5,7 +5,6 @@ import noul.oe.comment.dto.request.CommentCreateRequest
 import noul.oe.comment.dto.request.CommentModifyRequest
 import noul.oe.comment.dto.response.CommentResponse
 import noul.oe.comment.service.CommentService
-import noul.oe.common.response.ApiResponse
 import noul.oe.user.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,10 +26,10 @@ class CommentApiController(
         @PathVariable postId: Long,
         @RequestBody @Valid request: CommentCreateRequest,
         @AuthenticationPrincipal user: UserDetails
-    ): ResponseEntity<ApiResponse<CommentResponse>> {
+    ): ResponseEntity<CommentResponse> {
         val userId = userService.getUserIdByUsername(user.username)
         val response = commentService.create(postId, userId, request)
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response))
+        return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
     /**
@@ -41,10 +40,10 @@ class CommentApiController(
         @PathVariable commentId: Long,
         @RequestBody @Valid request: CommentCreateRequest,
         @AuthenticationPrincipal user: UserDetails
-    ): ResponseEntity<ApiResponse<CommentResponse>> {
+    ): ResponseEntity<CommentResponse> {
         val userId = userService.getUserIdByUsername(user.username)
         val response = commentService.reply(commentId, userId, request)
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response))
+        return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
     /**
@@ -55,10 +54,10 @@ class CommentApiController(
         @PathVariable commentId: Long,
         @RequestBody @Valid request: CommentModifyRequest,
         @AuthenticationPrincipal user: UserDetails
-    ): ResponseEntity<ApiResponse<Nothing>> {
+    ): ResponseEntity<Void> {
         val userId = userService.getUserIdByUsername(user.username)
         commentService.modify(commentId, userId, request.content)
-        return ResponseEntity.ok(ApiResponse.success())
+        return ResponseEntity.noContent().build()
     }
 
     /**
@@ -68,9 +67,9 @@ class CommentApiController(
     fun remove(
         @PathVariable commentId: Long,
         @AuthenticationPrincipal user: UserDetails
-    ): ResponseEntity<ApiResponse<Nothing>> {
+    ): ResponseEntity<Void> {
         val userId = userService.getUserIdByUsername(user.username)
         commentService.remove(commentId, userId)
-        return ResponseEntity.ok(ApiResponse.success())
+        return ResponseEntity.noContent().build()
     }
 }

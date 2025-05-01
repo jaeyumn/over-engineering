@@ -1,7 +1,7 @@
 package noul.oe.user.entity
 
 import jakarta.persistence.*
-import noul.oe.common.entity.BaseEntity
+import noul.oe.support.entity.BaseEntity
 import java.util.*
 
 @Entity
