@@ -2,5 +2,5 @@ package noul.oe.comment.exception
 
 import noul.oe.support.exception.BaseException
 
-class CommentNotFoundException : BaseException(CommentErrorCode.COMMENT_NOT_FOUND)
-class UnauthorizedCommentAccessException : BaseException(CommentErrorCode.UNAUTHORIZED_COMMENT_ACCESS)
+class CommentNotFoundException(logMessage: String) : BaseException(CommentErrorCode.COMMENT_NOT_FOUND, logMessage)
+class UnauthorizedCommentAccessException(logMessage: String) : BaseException(CommentErrorCode.UNAUTHORIZED_COMMENT_ACCESS, logMessage)

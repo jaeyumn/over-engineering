@@ -63,7 +63,7 @@ class PostPageController(
         val post = postService.read(postId, userId)
 
         if (!post.editable) {
-            throw PostPermissionDeniedException()
+            throw PostPermissionDeniedException("Post permission denied by: userId=$userId")
         }
 
         model.addAttribute("post", post)
