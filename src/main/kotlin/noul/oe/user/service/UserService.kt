@@ -25,17 +25,17 @@ class UserService(
     }
 
     fun getUserIdByUsername(username: String): String {
-        return userRepository.findByUsername(username)?.id ?: throw UserNotFoundException()
+        return userRepository.findByUsername(username)?.id ?: throw UserNotFoundException("User not found: username=$username")
     }
 
     private fun validateSignUpRequest(request: UserSignUpRequest) {
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.email)) {
-            throw EmailAlreadyExistsException()
+            throw EmailAlreadyExistsException("Email already exists: email=${request.email}")
         }
         // 유저네임 중복 체크
         if (userRepository.existsByUsername(request.username)) {
-            throw UsernameAlreadyExistsException()
+            throw UsernameAlreadyExistsException("Username aleardy exists: username=${request.username}")
         }
     }
 }

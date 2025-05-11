@@ -32,9 +32,7 @@ class CommentService(
 
     @Transactional
     fun reply(parentId: Long, userId: String, request: CommentCreateRequest): CommentResponse {
-        val parentComment = commentRepository.findById(parentId)
-            .orElseThrow { CommentNotFoundException() }
-
+        val parentComment = getComment(parentId)
         val reply = Comment(
             content = request.content,
             postId = parentComment.postId,
@@ -59,23 +57,18 @@ class CommentService(
 
     @Transactional
     fun modify(commentId: Long, userId: String, newContent: String) {
-        val comment = commentRepository.findById(commentId)
-            .orElseThrow { CommentNotFoundException() }
-
+        val comment = getComment(commentId)
         if (comment.isNotOwnedBy(userId)) {
-            throw UnauthorizedCommentAccessException()
+            throw UnauthorizedCommentAccessException("This comment is not owned by: userId=$userId")
         }
-
         comment.modify(newContent)
     }
 
     @Transactional
     fun remove(commentId: Long, userId: String) {
-        val comment = commentRepository.findById(commentId)
-            .orElseThrow { CommentNotFoundException() }
-
+        val comment = getComment(commentId)
         if (comment.isNotOwnedBy(userId)) {
-            throw UnauthorizedCommentAccessException()
+            throw UnauthorizedCommentAccessException("This comment is not owned by: userId=$userId")
         }
 
         // 댓글과 관련된 답글까지 같이 삭제
@@ -93,7 +86,12 @@ class CommentService(
         val children = groupedComments[comment.id]
             .orEmpty()
             .map { toResponseWithChildren(it, groupedComments, users, currentUserId) }
-        val user = users[comment.userId] ?: throw UserNotFoundException()
+        val user = users[comment.userId] ?: throw UserNotFoundException("User not found: userId=${comment.userId}")
         return CommentResponse.from(comment, user, currentUserId, children)
+    }
+
+    private fun getComment(commentId: Long): Comment {
+        return commentRepository.findById(commentId)
+            .orElseThrow { CommentNotFoundException("Comment not found: commentId=$commentId") }
     }
 }

@@ -19,7 +19,7 @@ class AuthService(
     private val authenticationManager: AuthenticationManager,
 ) {
     fun login(request: UserLogInRequest, httpRequest: HttpServletRequest): UserResponse {
-        val user = userRepository.findByUsername(request.username) ?: throw UserNotFoundException()
+        val user = userRepository.findByUsername(request.username) ?: throw UserNotFoundException("User not found: username=${request.username}")
 
         val authenticationToken = UsernamePasswordAuthenticationToken(request.username, request.password)
         val authentication = authenticationManager.authenticate(authenticationToken)
