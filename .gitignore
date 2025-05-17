@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 
 /logs
+logstash.conf
 *.env
 
 ### STS ###
