@@ -1,12 +1,13 @@
 package noul.oe.comment.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import noul.oe.comment.dto.request.CommentCreateRequest
-import noul.oe.comment.dto.request.CommentModifyRequest
-import noul.oe.comment.dto.response.CommentResponse
-import noul.oe.comment.service.CommentService
+import noul.oe.domain.comment.dto.request.CommentCreateRequest
+import noul.oe.domain.comment.dto.request.CommentModifyRequest
+import noul.oe.domain.comment.dto.response.CommentResponse
+import noul.oe.domain.comment.service.CommentService
 import noul.oe.config.SecurityTestConfig
-import noul.oe.user.service.UserService
+import noul.oe.domain.comment.controller.CommentApiController
+import noul.oe.domain.user.service.UserService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq

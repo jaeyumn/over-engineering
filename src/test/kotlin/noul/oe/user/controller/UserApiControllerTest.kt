@@ -2,8 +2,9 @@ package noul.oe.user.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import noul.oe.config.SecurityTestConfig
-import noul.oe.user.dto.request.UserSignUpRequest
-import noul.oe.user.service.UserService
+import noul.oe.domain.user.controller.UserApiController
+import noul.oe.domain.user.dto.request.UserSignUpRequest
+import noul.oe.domain.user.service.UserService
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any

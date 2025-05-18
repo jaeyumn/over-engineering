@@ -2,10 +2,11 @@ package noul.oe.post.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import noul.oe.config.SecurityTestConfig
-import noul.oe.post.dto.request.PostCreateRequest
-import noul.oe.post.dto.request.PostModifyRequest
-import noul.oe.post.service.PostService
-import noul.oe.user.service.UserService
+import noul.oe.domain.post.controller.PostApiController
+import noul.oe.domain.post.dto.request.PostCreateRequest
+import noul.oe.domain.post.dto.request.PostModifyRequest
+import noul.oe.domain.post.service.PostService
+import noul.oe.domain.user.service.UserService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq

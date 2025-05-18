@@ -1,14 +1,15 @@
 package noul.oe.comment.service
 
-import noul.oe.comment.dto.request.CommentCreateRequest
-import noul.oe.comment.entity.Comment
-import noul.oe.comment.exception.CommentErrorCode.COMMENT_NOT_FOUND
-import noul.oe.comment.exception.CommentErrorCode.UNAUTHORIZED_COMMENT_ACCESS
-import noul.oe.comment.exception.CommentNotFoundException
-import noul.oe.comment.exception.UnauthorizedCommentAccessException
-import noul.oe.comment.repository.CommentRepository
-import noul.oe.user.entity.User
-import noul.oe.user.repository.UserRepository
+import noul.oe.domain.comment.dto.request.CommentCreateRequest
+import noul.oe.domain.comment.entity.Comment
+import noul.oe.domain.comment.exception.CommentErrorCode.COMMENT_NOT_FOUND
+import noul.oe.domain.comment.exception.CommentErrorCode.UNAUTHORIZED_COMMENT_ACCESS
+import noul.oe.domain.comment.exception.CommentNotFoundException
+import noul.oe.domain.comment.exception.UnauthorizedCommentAccessException
+import noul.oe.domain.comment.repository.CommentRepository
+import noul.oe.domain.comment.service.CommentService
+import noul.oe.domain.user.entity.User
+import noul.oe.domain.user.repository.UserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach

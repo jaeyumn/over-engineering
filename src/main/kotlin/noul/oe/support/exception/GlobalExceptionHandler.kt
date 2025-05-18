@@ -1,7 +1,7 @@
 package noul.oe.support.exception
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import noul.oe.user.exception.UserErrorCode
+import noul.oe.domain.user.exception.UserErrorCode
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.web.bind.MethodArgumentNotValidException

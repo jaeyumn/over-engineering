@@ -1,12 +1,13 @@
 package noul.oe.post.controller
 
-import noul.oe.comment.dto.response.CommentResponse
-import noul.oe.comment.service.CommentService
+import noul.oe.domain.comment.dto.response.CommentResponse
+import noul.oe.domain.comment.service.CommentService
 import noul.oe.config.SecurityTestConfig
-import noul.oe.post.dto.response.PostDetailResponse
-import noul.oe.post.dto.response.PostPageResponse
-import noul.oe.post.service.PostService
-import noul.oe.user.service.UserService
+import noul.oe.domain.post.controller.PostPageController
+import noul.oe.domain.post.dto.response.PostDetailResponse
+import noul.oe.domain.post.dto.response.PostPageResponse
+import noul.oe.domain.post.service.PostService
+import noul.oe.domain.user.service.UserService
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

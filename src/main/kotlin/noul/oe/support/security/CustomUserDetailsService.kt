@@ -1,8 +1,8 @@
 package noul.oe.support.security
 
-import noul.oe.user.entity.User
-import noul.oe.user.exception.UserNotFoundException
-import noul.oe.user.repository.UserRepository
+import noul.oe.domain.user.entity.User
+import noul.oe.domain.user.exception.UserNotFoundException
+import noul.oe.domain.user.repository.UserRepository
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails

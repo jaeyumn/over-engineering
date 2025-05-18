@@ -2,9 +2,10 @@ package noul.oe.user.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import noul.oe.config.SecurityTestConfig
-import noul.oe.user.dto.request.UserLogInRequest
-import noul.oe.user.dto.response.UserResponse
-import noul.oe.user.service.AuthService
+import noul.oe.domain.user.controller.AuthApiController
+import noul.oe.domain.user.dto.request.UserLogInRequest
+import noul.oe.domain.user.dto.response.UserResponse
+import noul.oe.domain.user.service.AuthService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired

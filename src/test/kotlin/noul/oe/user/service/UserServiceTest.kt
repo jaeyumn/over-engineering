@@ -1,11 +1,12 @@
 package noul.oe.user.service
 
-import noul.oe.user.dto.request.UserSignUpRequest
-import noul.oe.user.entity.User
-import noul.oe.user.exception.EmailAlreadyExistsException
-import noul.oe.user.exception.UserErrorCode
-import noul.oe.user.exception.UsernameAlreadyExistsException
-import noul.oe.user.repository.UserRepository
+import noul.oe.domain.user.dto.request.UserSignUpRequest
+import noul.oe.domain.user.entity.User
+import noul.oe.domain.user.exception.EmailAlreadyExistsException
+import noul.oe.domain.user.exception.UserErrorCode
+import noul.oe.domain.user.exception.UsernameAlreadyExistsException
+import noul.oe.domain.user.repository.UserRepository
+import noul.oe.domain.user.service.UserService
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName

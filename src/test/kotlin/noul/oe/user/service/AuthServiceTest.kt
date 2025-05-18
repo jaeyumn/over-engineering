@@ -1,12 +1,13 @@
 package noul.oe.user.service
 
 import jakarta.servlet.http.HttpServletRequest
-import noul.oe.user.dto.request.UserLogInRequest
-import noul.oe.user.entity.User
-import noul.oe.user.exception.InvalidCredentialsException
-import noul.oe.user.exception.UserErrorCode
-import noul.oe.user.exception.UserNotFoundException
-import noul.oe.user.repository.UserRepository
+import noul.oe.domain.user.dto.request.UserLogInRequest
+import noul.oe.domain.user.entity.User
+import noul.oe.domain.user.exception.InvalidCredentialsException
+import noul.oe.domain.user.exception.UserErrorCode
+import noul.oe.domain.user.exception.UserNotFoundException
+import noul.oe.domain.user.repository.UserRepository
+import noul.oe.domain.user.service.AuthService
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
