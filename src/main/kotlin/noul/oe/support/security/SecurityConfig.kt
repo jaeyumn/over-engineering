@@ -1,6 +1,5 @@
-package noul.oe.user.config
+package noul.oe.support.security
 
-import noul.oe.user.service.CustomUserDetailsService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager

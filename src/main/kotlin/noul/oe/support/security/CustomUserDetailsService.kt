@@ -1,4 +1,4 @@
-package noul.oe.user.service
+package noul.oe.support.security
 
 import noul.oe.user.entity.User
 import noul.oe.user.exception.UserNotFoundException
