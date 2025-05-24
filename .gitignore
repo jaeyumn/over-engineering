@@ -8,6 +8,7 @@ build/
 /logs
 logstash.conf
 *.env
+artillery/
 
 ### STS ###
 .apt_generated
