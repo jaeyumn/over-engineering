@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0.28
+    container_name: oe-mysql
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  redis:
+    image: redis:8.0
+    container_name: oe-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql_data:
