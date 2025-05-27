@@ -1,4 +1,4 @@
-package noul.oe.user.service
+package noul.oe.domain.user.service
 
 import noul.oe.domain.user.dto.request.UserSignUpRequest
 import noul.oe.domain.user.entity.User

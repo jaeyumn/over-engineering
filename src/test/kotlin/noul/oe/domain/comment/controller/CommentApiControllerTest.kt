@@ -1,4 +1,4 @@
-package noul.oe.comment.controller
+package noul.oe.domain.comment.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import noul.oe.domain.comment.dto.request.CommentCreateRequest

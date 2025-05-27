@@ -1,4 +1,4 @@
-package noul.oe.user.service
+package noul.oe.domain.user.service
 
 import jakarta.servlet.http.HttpServletRequest
 import noul.oe.domain.user.dto.request.UserLogInRequest

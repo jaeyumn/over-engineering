@@ -1,4 +1,4 @@
-package noul.oe.post.controller
+package noul.oe.domain.post.controller
 
 import noul.oe.domain.comment.dto.response.CommentResponse
 import noul.oe.domain.comment.service.CommentService

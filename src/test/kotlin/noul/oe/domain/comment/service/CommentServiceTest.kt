@@ -1,4 +1,4 @@
-package noul.oe.comment.service
+package noul.oe.domain.comment.service
 
 import noul.oe.domain.comment.dto.request.CommentCreateRequest
 import noul.oe.domain.comment.entity.Comment

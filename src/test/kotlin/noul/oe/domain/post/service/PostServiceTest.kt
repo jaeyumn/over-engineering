@@ -1,4 +1,4 @@
-package noul.oe.post.service
+package noul.oe.domain.post.service
 
 import noul.oe.domain.comment.repository.CommentRepository
 import noul.oe.domain.post.dto.request.PostCreateRequest

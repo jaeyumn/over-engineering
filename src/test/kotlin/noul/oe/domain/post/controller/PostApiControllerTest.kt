@@ -1,4 +1,4 @@
-package noul.oe.post.controller
+package noul.oe.domain.post.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import noul.oe.config.SecurityTestConfig
