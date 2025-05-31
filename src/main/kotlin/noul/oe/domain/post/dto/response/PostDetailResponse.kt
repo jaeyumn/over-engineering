@@ -18,10 +18,10 @@ data class PostDetailResponse(
     val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun from(post: Post, user: User, likeCount: Long, commentCount: Int, liked: Boolean): PostDetailResponse = PostDetailResponse(
+        fun from(post: Post, username: String, likeCount: Long, commentCount: Int, liked: Boolean): PostDetailResponse = PostDetailResponse(
             postId = post.id,
             userId = post.userId,
-            username = user.username,
+            username = username,
             editable = true, // TODO
             title = post.title,
             content = post.content,
