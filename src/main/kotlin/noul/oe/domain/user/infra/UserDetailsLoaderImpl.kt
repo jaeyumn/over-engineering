@@ -1,4 +1,4 @@
-package noul.oe.domain.user.service
+package noul.oe.domain.user.infra
 
 import noul.oe.domain.user.repository.UserRepository
 import noul.oe.support.security.UserDetailsLoader
@@ -6,9 +6,9 @@ import noul.oe.support.security.UserPrincipal
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 
-@Service
+@Component
 class UserDetailsLoaderImpl(
     private val userRepository: UserRepository
 ) : UserDetailsLoader, UserDetailsService {

@@ -50,6 +50,7 @@ dependencies {
 	testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testRuntimeOnly("com.h2database:h2")
+	testImplementation("com.tngtech.archunit:archunit-junit5:1.4.1")
 }
 
 kotlin {

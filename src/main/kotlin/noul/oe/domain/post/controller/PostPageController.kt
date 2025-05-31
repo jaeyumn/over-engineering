@@ -1,6 +1,5 @@
 package noul.oe.domain.post.controller
 
-import noul.oe.domain.comment.service.CommentService
 import noul.oe.domain.post.exception.PostPermissionDeniedException
 import noul.oe.domain.post.service.PostService
 import noul.oe.support.security.SecurityUtils
@@ -16,7 +15,6 @@ import java.security.Principal
 @Controller
 class PostPageController(
     private val postService: PostService,
-    private val commentService: CommentService,
 ) {
     /**
      * 게시글 목록 조회(페이징)
@@ -40,10 +38,9 @@ class PostPageController(
     @GetMapping("/posts/{postId}")
     fun readDetail(@PathVariable postId: Long, model: Model): String {
         val user = SecurityUtils.getCurrentUser()
-        val post = postService.read(postId, user)
-        val comments = commentService.readAll(postId, user.userId)
-        model.addAttribute("post", post)
-        model.addAttribute("comments", comments)
+        val postWithComments = postService.readWithComments(postId, user)
+        model.addAttribute("post", postWithComments.post)
+        model.addAttribute("comments", postWithComments.comments)
         model.addAttribute("username", user.username)
 
         return "post-detail"

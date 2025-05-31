@@ -1,7 +1,6 @@
 package noul.oe.domain.post.dto.response
 
 import noul.oe.domain.post.entity.Post
-import noul.oe.domain.user.entity.User
 import java.time.LocalDateTime
 
 data class PostDetailResponse(
