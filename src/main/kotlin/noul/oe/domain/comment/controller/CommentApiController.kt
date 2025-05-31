@@ -25,10 +25,8 @@ class CommentApiController(
     fun create(
         @PathVariable postId: Long,
         @RequestBody @Valid request: CommentCreateRequest,
-        @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<CommentResponse> {
-        val userId = userService.getUserIdByUsername(user.username)
-        val response = commentService.create(postId, userId, request)
+        val response = commentService.create(postId, request)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
@@ -39,10 +37,8 @@ class CommentApiController(
     fun reply(
         @PathVariable commentId: Long,
         @RequestBody @Valid request: CommentCreateRequest,
-        @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<CommentResponse> {
-        val userId = userService.getUserIdByUsername(user.username)
-        val response = commentService.reply(commentId, userId, request)
+        val response = commentService.reply(commentId, request)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
@@ -53,10 +49,8 @@ class CommentApiController(
     fun modify(
         @PathVariable commentId: Long,
         @RequestBody @Valid request: CommentModifyRequest,
-        @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<Void> {
-        val userId = userService.getUserIdByUsername(user.username)
-        commentService.modify(commentId, userId, request.content)
+        commentService.modify(commentId, request.content)
         return ResponseEntity.noContent().build()
     }
 
@@ -66,10 +60,8 @@ class CommentApiController(
     @DeleteMapping("/comments/{commentId}")
     fun remove(
         @PathVariable commentId: Long,
-        @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<Void> {
-        val userId = userService.getUserIdByUsername(user.username)
-        commentService.remove(commentId, userId)
+        commentService.remove(commentId)
         return ResponseEntity.noContent().build()
     }
 }

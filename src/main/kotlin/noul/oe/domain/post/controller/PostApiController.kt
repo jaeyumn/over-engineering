@@ -4,18 +4,14 @@ import jakarta.validation.Valid
 import noul.oe.domain.post.dto.request.PostCreateRequest
 import noul.oe.domain.post.dto.request.PostModifyRequest
 import noul.oe.domain.post.service.PostService
-import noul.oe.domain.user.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/posts")
 class PostApiController(
     private val postService: PostService,
-    private val userService: UserService
 ) {
     /**
      * 게시글 생성
@@ -23,10 +19,8 @@ class PostApiController(
     @PostMapping
     fun create(
         @Valid @RequestBody request: PostCreateRequest,
-        @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<Void> {
-        val userId = userService.getUserIdByUsername(user.username)
-        postService.create(userId, request)
+        postService.create(request)
         return ResponseEntity.status(HttpStatus.CREATED).build()
     }
 
@@ -37,10 +31,8 @@ class PostApiController(
     fun modify(
         @PathVariable postId: Long,
         @Valid @RequestBody request: PostModifyRequest,
-        @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<Void> {
-        val userId = userService.getUserIdByUsername(user.username)
-        postService.modify(userId, postId, request)
+        postService.modify(postId, request)
         return ResponseEntity.noContent().build()
     }
 
@@ -50,10 +42,8 @@ class PostApiController(
     @DeleteMapping("/{postId}")
     fun remove(
         @PathVariable postId: Long,
-        @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<Void> {
-        val userId = userService.getUserIdByUsername(user.username)
-        postService.remove(userId, postId)
+        postService.remove(postId)
         return ResponseEntity.noContent().build()
     }
 
@@ -63,10 +53,8 @@ class PostApiController(
     @PostMapping("/{postId}/like")
     fun like(
         @PathVariable postId: Long,
-        @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<Void> {
-        val userId = userService.getUserIdByUsername(user.username)
-        postService.like(userId, postId)
+        postService.like(postId)
         return ResponseEntity.noContent().build()
     }
 
@@ -76,10 +64,8 @@ class PostApiController(
     @DeleteMapping("/{postId}/like")
     fun unlike(
         @PathVariable postId: Long,
-        @AuthenticationPrincipal user: UserDetails
     ): ResponseEntity<Void> {
-        val userId = userService.getUserIdByUsername(user.username)
-        postService.unlike(userId, postId)
+        postService.unlike(postId)
         return ResponseEntity.noContent().build()
     }
 }

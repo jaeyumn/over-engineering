@@ -9,6 +9,7 @@ import noul.oe.domain.comment.repository.CommentRepository
 import noul.oe.domain.user.entity.User
 import noul.oe.domain.user.exception.UserNotFoundException
 import noul.oe.domain.user.repository.UserRepository
+import noul.oe.support.security.SecurityUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -19,11 +20,11 @@ class CommentService(
     private val userRepository: UserRepository
 ) {
     @Transactional
-    fun create(postId: Long, userId: String, request: CommentCreateRequest): CommentResponse {
+    fun create(postId: Long, request: CommentCreateRequest): CommentResponse {
         val comment = Comment(
             content = request.content,
             postId = postId,
-            userId = userId,
+            userId = SecurityUtils.getCurrentUser().userId,
         )
         val savedComment = commentRepository.save(comment)
 
@@ -31,12 +32,12 @@ class CommentService(
     }
 
     @Transactional
-    fun reply(parentId: Long, userId: String, request: CommentCreateRequest): CommentResponse {
+    fun reply(parentId: Long, request: CommentCreateRequest): CommentResponse {
         val parentComment = getComment(parentId)
         val reply = Comment(
             content = request.content,
             postId = parentComment.postId,
-            userId = userId,
+            userId = SecurityUtils.getCurrentUser().userId,
             parentId = parentId
         )
         val savedReply = commentRepository.save(reply)
@@ -56,8 +57,9 @@ class CommentService(
     }
 
     @Transactional
-    fun modify(commentId: Long, userId: String, newContent: String) {
+    fun modify(commentId: Long, newContent: String) {
         val comment = getComment(commentId)
+        val userId = SecurityUtils.getCurrentUser().userId
         if (comment.isNotOwnedBy(userId)) {
             throw UnauthorizedCommentAccessException("This comment is not owned by: userId=$userId")
         }
@@ -65,8 +67,9 @@ class CommentService(
     }
 
     @Transactional
-    fun remove(commentId: Long, userId: String) {
+    fun remove(commentId: Long) {
         val comment = getComment(commentId)
+        val userId = SecurityUtils.getCurrentUser().userId
         if (comment.isNotOwnedBy(userId)) {
             throw UnauthorizedCommentAccessException("This comment is not owned by: userId=$userId")
         }

@@ -15,6 +15,8 @@ import noul.oe.domain.post.repository.PostRepository
 import noul.oe.domain.user.entity.User
 import noul.oe.domain.user.exception.UserNotFoundException
 import noul.oe.domain.user.repository.UserRepository
+import noul.oe.support.security.SecurityUtils
+import noul.oe.support.security.UserPrincipal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -29,22 +31,22 @@ class PostService(
     private val commentRepository: CommentRepository,
 ) {
     @Transactional
-    fun create(userId: String, request: PostCreateRequest) {
+    fun create(request: PostCreateRequest) {
+        val userId = SecurityUtils.getCurrentUser().userId
         val post = request.toEntity(userId)
         postRepository.save(post)
     }
 
     @Transactional
-    fun read(postId: Long, userId: String): PostDetailResponse {
+    fun read(postId: Long, user: UserPrincipal): PostDetailResponse {
         val post = getPost(postId)
         post.increaseViewCount()
 
-        val user = getUser(userId)
         val likeCount = post.likeCount
         val commentCount = commentRepository.countByPostId(postId)
-        val liked = postLikeRepository.existsByUserIdAndPostId(userId, postId)
+        val liked = postLikeRepository.existsByUserIdAndPostId(user.userId, postId)
 
-        return PostDetailResponse.from(post, user, likeCount, commentCount, liked)
+        return PostDetailResponse.from(post, user.username, likeCount, commentCount, liked)
     }
 
     fun readAll(pageable: Pageable): Page<PostPageResponse> {
@@ -56,7 +58,8 @@ class PostService(
     }
 
     @Transactional
-    fun modify(userId: String, postId: Long, request: PostModifyRequest) {
+    fun modify(postId: Long, request: PostModifyRequest) {
+        val userId = SecurityUtils.getCurrentUser().userId
         val post = getPost(postId)
         verifyAuthor(userId, post)
 
@@ -67,7 +70,8 @@ class PostService(
     }
 
     @Transactional
-    fun remove(userId: String, postId: Long) {
+    fun remove(postId: Long) {
+        val userId = SecurityUtils.getCurrentUser().userId
         val post = getPost(postId)
         verifyAuthor(userId, post)
 
@@ -76,7 +80,8 @@ class PostService(
     }
 
     @Transactional
-    fun like(userId: String, postId: Long) {
+    fun like(postId: Long) {
+        val userId = SecurityUtils.getCurrentUser().userId
         val post = getPost(postId)
         checkIsAlreadyLiked(userId, postId)
 
@@ -86,7 +91,8 @@ class PostService(
     }
 
     @Transactional
-    fun unlike(userId: String, postId: Long) {
+    fun unlike(postId: Long) {
+        val userId = SecurityUtils.getCurrentUser().userId
         val post = getPost(postId)
         val like = postLikeRepository.findByUserIdAndPostId(userId, postId) ?: return
 
