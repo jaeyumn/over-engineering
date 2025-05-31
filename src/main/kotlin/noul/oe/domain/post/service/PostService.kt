@@ -1,9 +1,9 @@
 package noul.oe.domain.post.service
 
-import noul.oe.domain.comment.repository.CommentRepository
 import noul.oe.domain.post.dto.request.PostCreateRequest
 import noul.oe.domain.post.dto.request.PostModifyRequest
 import noul.oe.domain.post.dto.response.PostDetailResponse
+import noul.oe.domain.post.dto.response.PostDetailWithCommentsResponse
 import noul.oe.domain.post.dto.response.PostPageResponse
 import noul.oe.domain.post.entity.Post
 import noul.oe.domain.post.entity.PostLike
@@ -12,9 +12,8 @@ import noul.oe.domain.post.exception.PostNotFoundException
 import noul.oe.domain.post.exception.PostPermissionDeniedException
 import noul.oe.domain.post.repository.PostLikeRepository
 import noul.oe.domain.post.repository.PostRepository
-import noul.oe.domain.user.entity.User
-import noul.oe.domain.user.exception.UserNotFoundException
-import noul.oe.domain.user.repository.UserRepository
+import noul.oe.support.info.CommentInfoProvider
+import noul.oe.support.info.UserInfoProvider
 import noul.oe.support.security.SecurityUtils
 import noul.oe.support.security.UserPrincipal
 import org.springframework.data.domain.Page
@@ -27,8 +26,8 @@ import org.springframework.transaction.annotation.Transactional
 class PostService(
     private val postRepository: PostRepository,
     private val postLikeRepository: PostLikeRepository,
-    private val userRepository: UserRepository,
-    private val commentRepository: CommentRepository,
+    private val userInfoProvider: UserInfoProvider,
+    private val commentInfoProvider: CommentInfoProvider,
 ) {
     @Transactional
     fun create(request: PostCreateRequest) {
@@ -43,7 +42,7 @@ class PostService(
         post.increaseViewCount()
 
         val likeCount = post.likeCount
-        val commentCount = commentRepository.countByPostId(postId)
+        val commentCount = commentInfoProvider.getCommentCount(postId)
         val liked = postLikeRepository.existsByUserIdAndPostId(user.userId, postId)
 
         return PostDetailResponse.from(post, user.username, likeCount, commentCount, liked)
@@ -51,10 +50,23 @@ class PostService(
 
     fun readAll(pageable: Pageable): Page<PostPageResponse> {
         return postRepository.findAll(pageable).map { post ->
-            val username = fetchUsernameByUserId(post.userId)
-            val commentCount = commentRepository.countByPostId(post.id)
+            val username = userInfoProvider.getUsername(post.userId)
+            val commentCount = commentInfoProvider.getCommentCount(post.id)
             PostPageResponse.from(post, username, commentCount)
         }
+    }
+
+    fun readWithComments(postId: Long, user: UserPrincipal): PostDetailWithCommentsResponse {
+        val post = getPost(postId)
+        val likeCount = post.likeCount
+        val commentCount = commentInfoProvider.getCommentCount(postId)
+        val liked = postLikeRepository.existsByUserIdAndPostId(user.userId, postId)
+        val commentList = commentInfoProvider.getCommentList(postId, user.userId).map {
+            it.copy(username = userInfoProvider.getUsername(it.userId))
+        }
+        val postDetail = PostDetailResponse.from(post, user.username, likeCount, commentCount, liked)
+
+        return PostDetailWithCommentsResponse(postDetail, commentList)
     }
 
     @Transactional
@@ -100,11 +112,6 @@ class PostService(
         post.decreaseLikeCount()
     }
 
-    fun fetchUsernameByUserId(userId: String): String {
-        val user = getUser(userId)
-        return user.username
-    }
-
     // 게시글 작성자 여부 확인
     private fun verifyAuthor(userId: String, post: Post) {
         if (post.userId != userId) {
@@ -117,11 +124,6 @@ class PostService(
         if (postLikeRepository.existsByUserIdAndPostId(userId, postId)) {
             throw AlreadyLikedPostException("Already liked post by: userId=$userId, postId=$postId")
         }
-    }
-
-    private fun getUser(userId: String): User {
-        return userRepository.findById(userId)
-            .orElseThrow { UserNotFoundException("User not found: userId=$userId") }
     }
 
     private fun getPost(postId: Long): Post {

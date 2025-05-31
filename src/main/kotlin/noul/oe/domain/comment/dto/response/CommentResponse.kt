@@ -1,7 +1,6 @@
 package noul.oe.domain.comment.dto.response
 
 import noul.oe.domain.comment.entity.Comment
-import noul.oe.domain.user.entity.User
 import java.time.LocalDateTime
 
 data class CommentResponse(
@@ -26,12 +25,17 @@ data class CommentResponse(
             )
         }
 
-        fun from(comment: Comment, user: User, currentUserId: String, children: List<CommentResponse> = emptyList()): CommentResponse {
+        fun from(
+            comment: Comment,
+            username: String,
+            currentUserId: String,
+            children: List<CommentResponse> = emptyList()
+        ): CommentResponse {
             return CommentResponse(
                 id = comment.id,
                 content = comment.content,
                 userId = comment.userId,
-                username = user.username,
+                username = username,
                 editable = comment.userId == currentUserId,
                 createdAt = comment.createdAt,
                 children = children,

@@ -6,9 +6,7 @@ import noul.oe.domain.comment.entity.Comment
 import noul.oe.domain.comment.exception.CommentNotFoundException
 import noul.oe.domain.comment.exception.UnauthorizedCommentAccessException
 import noul.oe.domain.comment.repository.CommentRepository
-import noul.oe.domain.user.entity.User
-import noul.oe.domain.user.exception.UserNotFoundException
-import noul.oe.domain.user.repository.UserRepository
+import noul.oe.support.info.UserInfoProvider
 import noul.oe.support.security.SecurityUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class CommentService(
     private val commentRepository: CommentRepository,
-    private val userRepository: UserRepository
+    private val userInfoProvider: UserInfoProvider,
 ) {
     @Transactional
     fun create(postId: Long, request: CommentCreateRequest): CommentResponse {
@@ -47,13 +45,10 @@ class CommentService(
 
     fun readAll(postId: Long, currentUserId: String): List<CommentResponse> {
         val comments = commentRepository.findAllByPostId(postId)
-        val userIds = comments.map { it.userId }.toSet()
-        val users = userRepository.findAllById(userIds).associateBy { it.id }
-
         val groupedComments = comments.groupBy { it.parentId }
         val rootComments = groupedComments[null].orEmpty()
 
-        return rootComments.map { toResponseWithChildren(it, groupedComments, users, currentUserId) }
+        return rootComments.map { toResponseWithChildren(it, groupedComments, currentUserId) }
     }
 
     @Transactional
@@ -83,14 +78,13 @@ class CommentService(
     private fun toResponseWithChildren(
         comment: Comment,
         groupedComments: Map<Long?, List<Comment>>,
-        users: Map<String, User>,
         currentUserId: String
     ): CommentResponse {
         val children = groupedComments[comment.id]
             .orEmpty()
-            .map { toResponseWithChildren(it, groupedComments, users, currentUserId) }
-        val user = users[comment.userId] ?: throw UserNotFoundException("User not found: userId=${comment.userId}")
-        return CommentResponse.from(comment, user, currentUserId, children)
+            .map { toResponseWithChildren(it, groupedComments, currentUserId) }
+        val username = userInfoProvider.getUsername(comment.userId)
+        return CommentResponse.from(comment, username, currentUserId, children)
     }
 
     private fun getComment(commentId: Long): Comment {
