@@ -1,20 +1,21 @@
 package noul.oe.post.service
 
-import noul.oe.domain.comment.repository.CommentRepository
-import noul.oe.domain.post.dto.request.PostCreateRequest
-import noul.oe.domain.post.dto.request.PostModifyRequest
-import noul.oe.domain.post.entity.Post
-import noul.oe.domain.post.entity.PostLike
-import noul.oe.domain.post.exception.AlreadyLikedPostException
-import noul.oe.domain.post.exception.PostErrorCode.PERMISSION_DENIED
-import noul.oe.domain.post.exception.PostErrorCode.POST_NOT_FOUND
-import noul.oe.domain.post.exception.PostNotFoundException
-import noul.oe.domain.post.exception.PostPermissionDeniedException
-import noul.oe.domain.post.repository.PostLikeRepository
-import noul.oe.domain.post.repository.PostRepository
-import noul.oe.domain.post.service.PostService
-import noul.oe.domain.user.entity.User
-import noul.oe.domain.user.repository.UserRepository
+import noul.oe.core.comment.repository.CommentRepository
+import noul.oe.core.post.dto.request.PostCreateRequest
+import noul.oe.core.post.dto.request.PostModifyRequest
+import noul.oe.core.post.entity.Post
+import noul.oe.core.post.entity.PostLike
+import noul.oe.core.post.exception.AlreadyLikedPostException
+import noul.oe.core.post.exception.PostErrorCode.PERMISSION_DENIED
+import noul.oe.core.post.exception.PostErrorCode.POST_NOT_FOUND
+import noul.oe.core.post.exception.PostNotFoundException
+import noul.oe.core.post.exception.PostPermissionDeniedException
+import noul.oe.core.post.repository.PostLikeRepository
+import noul.oe.core.post.repository.PostRepository
+import noul.oe.core.post.service.PostService
+import noul.oe.core.user1.entity.User
+import noul.oe.core.user1.repository.UserRepository
+import noul.oe.support.security.UserPrincipal
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.time.LocalDateTime
 import java.util.*
 
@@ -36,6 +38,12 @@ class PostServiceTest {
 
     private val userId = "testuser"
     private val postId = 1L
+    private val userPrincipal = UserPrincipal(
+        userId = userId,
+        username = "testuser",
+        "",
+        authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
+    )
 
     @BeforeEach
     fun setUp() {
@@ -43,7 +51,7 @@ class PostServiceTest {
         postLikeRepository = mock<PostLikeRepository>()
         userRepository = mock<UserRepository>()
         commentRepository = mock<CommentRepository>()
-        sut = PostService(postRepository, postLikeRepository, userRepository, commentRepository)
+//        sut = PostService(postRepository, postLikeRepository, userRepository, commentRepository)
     }
 
     @Nested
@@ -57,7 +65,7 @@ class PostServiceTest {
             whenever(postRepository.save(any<Post>())).thenReturn(post)
 
             // when
-            sut.create(userId, request)
+            sut.create(request)
 
             // then
             verify(postRepository).save(any())
@@ -73,7 +81,7 @@ class PostServiceTest {
             whenever(postRepository.findById(postId)).thenReturn(Optional.empty())
 
             // when & then
-            assertThatThrownBy { sut.read(postId, userId) }
+            assertThatThrownBy { sut.read(postId, userPrincipal) }
                 .isInstanceOf(PostNotFoundException::class.java)
                 .hasMessageContaining(POST_NOT_FOUND.message)
         }
@@ -101,7 +109,7 @@ class PostServiceTest {
             whenever(postRepository.findById(postId)).thenReturn(Optional.of(post))
 
             // when
-            val result = sut.read(postId, userId)
+            val result = sut.read(postId, userPrincipal)
 
             // then
             verify(post).increaseViewCount()
@@ -168,7 +176,7 @@ class PostServiceTest {
             val request = PostModifyRequest("title", "content")
 
             // when & then
-            assertThatThrownBy { sut.modify(userId, postId, request) }
+            assertThatThrownBy { sut.modify(postId, request) }
                 .isInstanceOf(PostPermissionDeniedException::class.java)
                 .hasMessageContaining(PERMISSION_DENIED.message)
         }
@@ -186,7 +194,7 @@ class PostServiceTest {
             val request = PostModifyRequest(title, content)
 
             // when
-            sut.modify(userId, postId, request)
+            sut.modify(postId, request)
 
             // then
             verify(post).modify(title, content)
@@ -204,7 +212,7 @@ class PostServiceTest {
             whenever(postRepository.findById(postId)).thenReturn(Optional.of(post))
 
             // when & then
-            assertThatThrownBy { sut.remove(userId, postId) }
+            assertThatThrownBy { sut.remove(postId) }
                 .isInstanceOf(PostPermissionDeniedException::class.java)
                 .hasMessageContaining(PERMISSION_DENIED.message)
         }
@@ -217,7 +225,7 @@ class PostServiceTest {
             whenever(postRepository.findById(postId)).thenReturn(Optional.of(post))
 
             // when
-            sut.remove(userId, postId)
+            sut.remove(postId)
 
             // then
             verify(postLikeRepository).deleteAllByPostId(postId)
@@ -234,7 +242,7 @@ class PostServiceTest {
             whenever(postRepository.findById(postId)).thenReturn(Optional.empty())
 
             // when & then
-            assertThatThrownBy { sut.like(userId, postId) }
+            assertThatThrownBy { sut.like(postId) }
                 .isInstanceOf(PostNotFoundException::class.java)
                 .hasMessageContaining(POST_NOT_FOUND.message)
         }
@@ -247,7 +255,7 @@ class PostServiceTest {
             whenever(postLikeRepository.existsByUserIdAndPostId(userId, postId)).thenReturn(true)
 
             // when & then
-            assertThatThrownBy { sut.like(userId, postId) }
+            assertThatThrownBy { sut.like(postId) }
                 .isInstanceOf(AlreadyLikedPostException::class.java)
         }
 
@@ -260,7 +268,7 @@ class PostServiceTest {
             whenever(postLikeRepository.existsByUserIdAndPostId(userId, postId)).thenReturn(false)
 
             // when
-            sut.like(userId, postId)
+            sut.like(postId)
 
             // then
             verify(postLikeRepository).save(any())
@@ -277,7 +285,7 @@ class PostServiceTest {
             whenever(postRepository.findById(postId)).thenReturn(Optional.empty())
 
             // when & then
-            assertThatThrownBy { sut.unlike(userId, postId) }
+            assertThatThrownBy { sut.unlike(postId) }
                 .isInstanceOf(PostNotFoundException::class.java)
                 .hasMessageContaining(POST_NOT_FOUND.message)
         }
@@ -291,7 +299,7 @@ class PostServiceTest {
             whenever(postLikeRepository.findByUserIdAndPostId(userId, postId)).thenReturn(null)
 
             // when
-            sut.unlike(userId, postId)
+            sut.unlike(postId)
 
             // then
             verify(postLikeRepository, never()).delete(any())
@@ -312,7 +320,7 @@ class PostServiceTest {
             whenever(postLikeRepository.findByUserIdAndPostId(userId, postId)).thenReturn(like)
 
             // when
-            sut.unlike(userId, postId)
+            sut.unlike(postId)
 
             // then
             verify(postLikeRepository).delete(like)

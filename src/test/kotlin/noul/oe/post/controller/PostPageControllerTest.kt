@@ -1,13 +1,14 @@
 package noul.oe.post.controller
 
-import noul.oe.domain.comment.dto.response.CommentResponse
-import noul.oe.domain.comment.service.CommentService
+import noul.oe.core.comment.dto.response.CommentResponse
+import noul.oe.core.comment.service.CommentService
 import noul.oe.config.SecurityTestConfig
-import noul.oe.domain.post.controller.PostPageController
-import noul.oe.domain.post.dto.response.PostDetailResponse
-import noul.oe.domain.post.dto.response.PostPageResponse
-import noul.oe.domain.post.service.PostService
-import noul.oe.domain.user.service.UserService
+import noul.oe.core.post.controller.PostPageController
+import noul.oe.core.post.dto.response.PostDetailResponse
+import noul.oe.core.post.dto.response.PostPageResponse
+import noul.oe.core.post.service.PostService
+import noul.oe.core.user1.service.UserService
+import noul.oe.support.security.UserPrincipal
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -18,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.data.domain.PageImpl
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -43,6 +45,12 @@ class PostPageControllerTest {
     private val postId = 1L
     private val username = "testuser"
     private val userId = "testId"
+    private val user = UserPrincipal(
+        userId = userId,
+        username = username,
+        "",
+        authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
+    )
 
     @Test
     @DisplayName("게시글 목록 페이지가 정상 렌더링된다")
@@ -81,7 +89,7 @@ class PostPageControllerTest {
         val comments = listOf<CommentResponse>()
 
         whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
-        whenever(postService.read(postId, userId)).thenReturn(post)
+        whenever(postService.read(postId, user)).thenReturn(post)
         whenever(commentService.readAll(postId, userId)).thenReturn(comments)
 
         // when & then
@@ -116,7 +124,7 @@ class PostPageControllerTest {
             )
 
             whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
-            whenever(postService.read(postId, userId)).thenReturn(post)
+            whenever(postService.read(postId, user)).thenReturn(post)
 
             // when & then
             mockMvc.perform(get("/posts/{postId}/edit", postId))
@@ -143,7 +151,7 @@ class PostPageControllerTest {
             )
 
             whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
-            whenever(postService.read(postId, userId)).thenReturn(post)
+            whenever(postService.read(postId, user)).thenReturn(post)
 
             // when & then
             mockMvc.perform(get("/posts/{postId}/edit", postId))

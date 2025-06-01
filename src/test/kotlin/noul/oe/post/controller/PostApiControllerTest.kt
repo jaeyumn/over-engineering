@@ -2,11 +2,11 @@ package noul.oe.post.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import noul.oe.config.SecurityTestConfig
-import noul.oe.domain.post.controller.PostApiController
-import noul.oe.domain.post.dto.request.PostCreateRequest
-import noul.oe.domain.post.dto.request.PostModifyRequest
-import noul.oe.domain.post.service.PostService
-import noul.oe.domain.user.service.UserService
+import noul.oe.core.post.controller.PostApiController
+import noul.oe.core.post.dto.request.PostCreateRequest
+import noul.oe.core.post.dto.request.PostModifyRequest
+import noul.oe.core.post.service.PostService
+import noul.oe.core.user1.service.UserService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -56,7 +56,7 @@ class PostApiControllerTest {
         )
             .andExpect(status().isCreated)
 
-        verify(postService).create(eq(userId), any())
+        verify(postService).create(any())
     }
 
     @Test
@@ -75,7 +75,7 @@ class PostApiControllerTest {
         )
             .andExpect(status().isNoContent)
 
-        verify(postService).modify(eq(userId), eq(postId), any())
+        verify(postService).modify(eq(postId), any())
     }
 
     @Test
@@ -88,7 +88,7 @@ class PostApiControllerTest {
         mockMvc.perform(delete("/api/posts/{postId}", postId))
             .andExpect(status().isNoContent)
 
-        verify(postService).remove(userId, postId)
+        verify(postService).remove(postId)
     }
 
     @Test
@@ -101,7 +101,7 @@ class PostApiControllerTest {
         mockMvc.perform(post("/api/posts/{postId}/like", postId))
             .andExpect(status().isNoContent)
 
-        verify(postService).like(userId, postId)
+        verify(postService).like(postId)
     }
 
     @Test
@@ -114,6 +114,6 @@ class PostApiControllerTest {
         mockMvc.perform(delete("/api/posts/{postId}/like", postId))
             .andExpect(status().isNoContent)
 
-        verify(postService).unlike(userId, postId)
+        verify(postService).unlike(postId)
     }
 }

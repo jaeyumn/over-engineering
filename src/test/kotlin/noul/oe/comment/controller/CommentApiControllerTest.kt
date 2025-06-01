@@ -1,13 +1,13 @@
 package noul.oe.comment.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import noul.oe.domain.comment.dto.request.CommentCreateRequest
-import noul.oe.domain.comment.dto.request.CommentModifyRequest
-import noul.oe.domain.comment.dto.response.CommentResponse
-import noul.oe.domain.comment.service.CommentService
+import noul.oe.core.comment.dto.request.CommentCreateRequest
+import noul.oe.core.comment.dto.request.CommentModifyRequest
+import noul.oe.core.comment.dto.response.CommentResponse
+import noul.oe.core.comment.service.CommentService
 import noul.oe.config.SecurityTestConfig
-import noul.oe.domain.comment.controller.CommentApiController
-import noul.oe.domain.user.service.UserService
+import noul.oe.core.comment.controller.CommentApiController
+import noul.oe.core.user1.service.UserService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -57,7 +57,7 @@ class CommentApiControllerTest {
             createdAt = LocalDateTime.now(),
             children = emptyList()
         )
-        whenever(commentService.create(eq(postId), eq(userId), any())).thenReturn(response)
+        whenever(commentService.create(eq(postId), any())).thenReturn(response)
         whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
 
         // when & then
@@ -71,7 +71,7 @@ class CommentApiControllerTest {
             .andExpect(jsonPath("$.username").value(username))
             .andExpect(jsonPath("$.editable").value(true))
 
-        verify(commentService).create(eq(postId), eq(userId), any())
+        verify(commentService).create(eq(postId), any())
     }
 
     @Test
@@ -88,7 +88,7 @@ class CommentApiControllerTest {
             createdAt = LocalDateTime.now(),
             children = emptyList()
         )
-        whenever(commentService.reply(eq(commentId), eq(userId), any())).thenReturn(response)
+        whenever(commentService.reply(eq(commentId), any())).thenReturn(response)
         whenever(userService.getUserIdByUsername(username)).thenReturn(userId)
 
         // when & then
@@ -100,7 +100,7 @@ class CommentApiControllerTest {
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.content").value("대댓글입니다"))
 
-        verify(commentService).reply(eq(commentId), eq(userId), any())
+        verify(commentService).reply(eq(commentId), any())
     }
 
     @Test
@@ -119,7 +119,7 @@ class CommentApiControllerTest {
         )
             .andExpect(status().isNoContent)
 
-        verify(commentService).modify(eq(commentId), eq(userId), eq("수정된 내용"))
+        verify(commentService).modify(eq(commentId), eq("수정된 내용"))
     }
 
     @Test
@@ -132,6 +132,6 @@ class CommentApiControllerTest {
         mockMvc.perform(delete("/api/comments/{commentId}", commentId))
             .andExpect(status().isNoContent)
 
-        verify(commentService).remove(eq(commentId), eq(userId))
+        verify(commentService).remove(eq(commentId))
     }
 }
