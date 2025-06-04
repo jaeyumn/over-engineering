@@ -1,6 +1,6 @@
 package noul.oe.core.user.application.port.output
 
-import noul.oe.core.user.domain.model.User
+import noul.oe.core.user.domain.User
 
 interface UserRepositoryPort {
     fun save(user: User)

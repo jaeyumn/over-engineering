@@ -1,7 +1,7 @@
 package noul.oe.core.user.adapter.out.security
 
 import noul.oe.core.user.adapter.out.persistence.UserJpaRepository
-import noul.oe.core.user.domain.exception.UserNotFoundException
+import noul.oe.core.user.application.exception.UserNotFoundException
 import noul.oe.support.security.UserDetailsLoader
 import noul.oe.support.security.UserPrincipal
 import org.springframework.security.core.authority.SimpleGrantedAuthority

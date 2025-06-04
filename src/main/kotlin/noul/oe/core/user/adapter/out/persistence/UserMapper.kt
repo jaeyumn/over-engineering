@@ -1,6 +1,6 @@
 package noul.oe.core.user.adapter.out.persistence
 
-import noul.oe.core.user.domain.model.User
+import noul.oe.core.user.domain.User
 
 object UserMapper {
     fun toEntity(user: User): UserJpaEntity =

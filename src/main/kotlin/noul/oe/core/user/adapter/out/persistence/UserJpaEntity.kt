@@ -1,8 +1,8 @@
 package noul.oe.core.user.adapter.out.persistence
 
 import jakarta.persistence.*
-import noul.oe.core.user.domain.model.Role
-import noul.oe.core.user.domain.model.User
+import noul.oe.core.user.domain.Role
+import noul.oe.core.user.domain.User
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener

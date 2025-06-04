@@ -1,7 +1,7 @@
 package noul.oe.core.user.application.port.input
 
-import noul.oe.core.user.domain.model.Role
-import noul.oe.core.user.domain.model.User
+import noul.oe.core.user.domain.Role
+import noul.oe.core.user.domain.User
 import java.time.LocalDateTime
 import java.util.*
 

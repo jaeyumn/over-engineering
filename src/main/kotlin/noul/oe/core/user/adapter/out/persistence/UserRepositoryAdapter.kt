@@ -1,10 +1,11 @@
 package noul.oe.core.user.adapter.out.persistence
 
 import noul.oe.core.user.application.port.output.UserRepositoryPort
-import noul.oe.core.user.domain.model.User
+import noul.oe.core.user.domain.User
 import org.springframework.stereotype.Component
+import org.springframework.stereotype.Repository
 
-@Component
+@Repository
 class UserRepositoryAdapter(
     private val userRepository: UserJpaRepository,
 ) : UserRepositoryPort {
