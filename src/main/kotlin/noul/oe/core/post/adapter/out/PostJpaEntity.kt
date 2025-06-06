@@ -1,7 +1,9 @@
 package noul.oe.core.post.adapter.out
 
 import jakarta.persistence.*
-import noul.oe.support.entity.BaseEntity
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "post", catalog = "post_db")
@@ -24,7 +26,15 @@ class PostJpaEntity(
 
     @Column(nullable = false)
     var userId: String,
-) : BaseEntity() {
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @LastModifiedDate
+    @Column(nullable = false)
+    val modifiedAt: LocalDateTime = LocalDateTime.now(),
+) {
 
     fun modify(title: String, content: String) {
         this.title = title

@@ -1,6 +1,5 @@
 package noul.oe.post.controller
 
-import noul.oe.core.comment.dto.response.CommentResponse
 import noul.oe.core.comment.service.CommentService
 import noul.oe.config.SecurityTestConfig
 import noul.oe.core.post.adapter.`in`.web.page.PostPageController

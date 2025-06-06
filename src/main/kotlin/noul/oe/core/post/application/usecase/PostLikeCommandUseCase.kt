@@ -3,9 +3,7 @@ package noul.oe.core.post.application.usecase
 import noul.oe.core.post.application.exception.AlreadyLikedPostException
 import noul.oe.core.post.application.exception.PostLikeNotFoundException
 import noul.oe.core.post.application.exception.PostNotFoundException
-import noul.oe.core.post.application.port.input.LikeCommand
 import noul.oe.core.post.application.port.input.PostLikeCommandPort
-import noul.oe.core.post.application.port.input.UnlikeCommand
 import noul.oe.core.post.application.port.output.PostLikeRepositoryPort
 import noul.oe.core.post.application.port.output.PostRepositoryPort
 import noul.oe.core.post.domain.Post
@@ -21,12 +19,11 @@ class PostLikeCommandUseCase(
     private val postLikeRepositoryPort: PostLikeRepositoryPort,
 ) : PostLikeCommandPort {
 
-    override fun like(command: LikeCommand) {
+    override fun like(postId: Long) {
         val userId = SecurityUtils.getCurrentUser().userId
-        val postId = command.postId
 
         val post = getPost(postId)
-        checkIsAlreadyLiked(userId, command.postId)
+        checkIsAlreadyLiked(userId, postId)
 
         post.like()
         postRepositoryPort.save(post)
@@ -35,9 +32,8 @@ class PostLikeCommandUseCase(
         postLikeRepositoryPort.save(postLike)
     }
 
-    override fun unlike(command: UnlikeCommand) {
+    override fun unlike(postId: Long) {
         val userId = SecurityUtils.getCurrentUser().userId
-        val postId = command.postId
 
         val post = getPost(postId)
         post.unlike()

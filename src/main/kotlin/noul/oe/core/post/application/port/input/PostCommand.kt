@@ -2,7 +2,7 @@ package noul.oe.core.post.application.port.input
 
 import noul.oe.core.post.domain.Post
 
-data class CreateCommand(
+data class CreatePostCommand(
     val title: String,
     val content: String,
 ) {
@@ -10,12 +10,8 @@ data class CreateCommand(
         Post(userId = userId, title = title, content = content)
 }
 
-data class ModifyCommand(
+data class ModifyPostCommand(
     val postId: Long,
     val title: String,
     val content: String,
-)
-
-data class RemoveCommand(
-    val postId: Long,
 )

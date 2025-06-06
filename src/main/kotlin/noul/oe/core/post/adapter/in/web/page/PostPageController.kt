@@ -1,6 +1,7 @@
 package noul.oe.core.post.adapter.`in`.web.page
 
 import noul.oe.core.post.application.exception.PostPermissionDeniedException
+import noul.oe.core.post.application.port.input.PostQueryPort
 import noul.oe.support.security.SecurityUtils
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -13,7 +14,7 @@ import java.security.Principal
 
 @Controller
 class PostPageController(
-    private val postService: PostService,
+    private val postQueryPort: PostQueryPort,
 ) {
     @GetMapping("/posts")
     fun readAll(
@@ -21,7 +22,7 @@ class PostPageController(
         @PageableDefault(size = 4, sort = ["createdAt"], direction = Sort.Direction.DESC) pageable: Pageable
     ): String {
         val username = SecurityUtils.getCurrentUser().username
-        val posts = postService.readAll(pageable)
+        val posts = postQueryPort.readAll(pageable)
         model.addAttribute("posts", posts)
         model.addAttribute("username", username)
 
@@ -30,8 +31,9 @@ class PostPageController(
 
     @GetMapping("/posts/{postId}")
     fun readDetail(@PathVariable postId: Long, model: Model): String {
+        val postWithComments = postQueryPort.readWithComments(postId)
+
         val user = SecurityUtils.getCurrentUser()
-        val postWithComments = postService.readWithComments(postId, user)
         model.addAttribute("post", postWithComments.post)
         model.addAttribute("comments", postWithComments.comments)
         model.addAttribute("username", user.username)
@@ -48,8 +50,8 @@ class PostPageController(
 
     @GetMapping("/posts/{postId}/edit")
     fun modify(@PathVariable postId: Long, model: Model): String {
+        val post = postQueryPort.readDetail(postId)
         val user = SecurityUtils.getCurrentUser()
-        val post = postService.read(postId, user)
 
         if (!post.editable) {
             throw PostPermissionDeniedException(user.userId)

@@ -1,11 +1,11 @@
 package noul.oe.comment.service
 
-import noul.oe.core.comment.dto.request.CommentCreateRequest
-import noul.oe.core.comment.entity.Comment
-import noul.oe.core.comment.exception.CommentErrorCode.COMMENT_NOT_FOUND
-import noul.oe.core.comment.exception.CommentErrorCode.UNAUTHORIZED_COMMENT_ACCESS
-import noul.oe.core.comment.exception.CommentNotFoundException
-import noul.oe.core.comment.exception.UnauthorizedCommentAccessException
+import noul.oe.core.comment.adapter.`in`.web.CommentCreateRequest
+import noul.oe.core.comment.adapter.out.persistence.Comment
+import noul.oe.core.comment.application.exception.CommentErrorCode.COMMENT_NOT_FOUND
+import noul.oe.core.comment.application.exception.CommentErrorCode.UNAUTHORIZED_COMMENT_ACCESS
+import noul.oe.core.comment.application.exception.CommentNotFoundException
+import noul.oe.core.comment.application.exception.UnauthorizedCommentAccessException
 import noul.oe.core.comment.repository.CommentRepository
 import noul.oe.core.comment.service.CommentService
 import noul.oe.core.user1.entity.User

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 class PostQueryUseCase(
     private val postRepositoryPort: PostRepositoryPort,
     private val postLikeRepository: PostLikeRepositoryPort,
@@ -22,9 +22,8 @@ class PostQueryUseCase(
     private val commentInfoProvider: CommentInfoProvider,
 ) : PostQueryPort {
 
-    override fun readDetail(condition: ReadDetailCondition): PostDetailResponse {
+    override fun readDetail(postId: Long): PostDetailResponse {
         val user = SecurityUtils.getCurrentUser()
-        val postId = condition.postId
         val post = getPost(postId)
         post.increaseViewCount()
 
@@ -49,10 +48,10 @@ class PostQueryUseCase(
         }
     }
 
-    override fun readWithComments(condition: ReadWithCommentsCondition): PostDetailWithCommentsResponse {
+    override fun readWithComments(postId: Long): PostDetailWithCommentsResponse {
         val user = SecurityUtils.getCurrentUser()
-        val post = getPost(condition.postId)
-        val commentCount = commentInfoProvider.getCommentCount(condition.postId)
+        val post = getPost(postId)
+        val commentCount = commentInfoProvider.getCommentCount(postId)
         val liked = postLikeRepository.existsByUserIdAndPostId(user.userId, post.id!!)
         val commentList = commentInfoProvider.getCommentList(post.id, user.userId).map {
             it.copy(username = userInfoProvider.getUsername(it.userId))

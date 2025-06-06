@@ -9,7 +9,7 @@ data class Post(
     val content: String,
     var viewCount: Long = 0,
     var likeCount: Long = 0,
-    val createdAt: LocalDateTime,
+    val createdAt: LocalDateTime = LocalDateTime.now(),
 ) {
     fun modify(title: String, content: String): Post {
         return this.copy(title = title, content = content)
