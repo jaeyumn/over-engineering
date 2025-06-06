@@ -1,6 +1,6 @@
 package noul.oe.support.security
 
-import noul.oe.support.exception.BaseException
+import noul.oe.support.exception.DomainException
 
-class UnauthenticatedException(logMessage: String = "Unauthenticated access") :
-    BaseException(SecurityErrorCode.UNAUTHENTICATED, logMessage)
+class UnauthenticatedException :
+    DomainException(SecurityErrorCode.UNAUTHENTICATED, "Unauthenticated access")

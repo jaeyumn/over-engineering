@@ -1,15 +1,15 @@
 package noul.oe.comment.service
 
-import noul.oe.domain.comment.dto.request.CommentCreateRequest
-import noul.oe.domain.comment.entity.Comment
-import noul.oe.domain.comment.exception.CommentErrorCode.COMMENT_NOT_FOUND
-import noul.oe.domain.comment.exception.CommentErrorCode.UNAUTHORIZED_COMMENT_ACCESS
-import noul.oe.domain.comment.exception.CommentNotFoundException
-import noul.oe.domain.comment.exception.UnauthorizedCommentAccessException
-import noul.oe.domain.comment.repository.CommentRepository
-import noul.oe.domain.comment.service.CommentService
-import noul.oe.domain.user.entity.User
-import noul.oe.domain.user.repository.UserRepository
+import noul.oe.core.comment.adapter.`in`.web.CommentCreateRequest
+import noul.oe.core.comment.adapter.out.persistence.Comment
+import noul.oe.core.comment.application.exception.CommentErrorCode.COMMENT_NOT_FOUND
+import noul.oe.core.comment.application.exception.CommentErrorCode.UNAUTHORIZED_COMMENT_ACCESS
+import noul.oe.core.comment.application.exception.CommentNotFoundException
+import noul.oe.core.comment.application.exception.UnauthorizedCommentAccessException
+import noul.oe.core.comment.repository.CommentRepository
+import noul.oe.core.comment.service.CommentService
+import noul.oe.core.user1.entity.User
+import noul.oe.core.user1.repository.UserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -34,7 +34,7 @@ class CommentServiceTest {
         commentRepository = mock<CommentRepository>()
         userRepository = mock<UserRepository>()
 
-        sut = CommentService(commentRepository, userRepository)
+//        sut = CommentService(commentRepository, userRepository)
     }
 
     @Nested
@@ -48,7 +48,7 @@ class CommentServiceTest {
             whenever(commentRepository.save(any<Comment>())).thenReturn(comment)
 
             // when
-            val result = sut.create(postId, userId, request)
+            val result = sut.create(postId, request)
 
             // then
             assertThat(result.id).isEqualTo(commentId)
@@ -79,7 +79,7 @@ class CommentServiceTest {
             )
             whenever(commentRepository.save(any<Comment>())).thenReturn(savedReply)
 
-            val result = sut.reply(commentId, userId, request)
+            val result = sut.reply(commentId, request)
 
             // then
             assertThat(result.content).isEqualTo("대댓글입니다")
@@ -128,7 +128,7 @@ class CommentServiceTest {
             whenever(commentRepository.findById(commentId)).thenReturn(Optional.of(comment))
 
             // when & then
-            assertThatThrownBy { sut.modify(commentId, otherUserId, "수정") }
+            assertThatThrownBy { sut.modify(commentId, "수정") }
                 .isInstanceOf(UnauthorizedCommentAccessException::class.java)
                 .hasMessageContaining(UNAUTHORIZED_COMMENT_ACCESS.message)
         }
@@ -140,7 +140,7 @@ class CommentServiceTest {
             whenever(commentRepository.findById(commentId)).thenReturn(Optional.empty())
 
             // when & then
-            assertThatThrownBy { sut.modify(commentId, userId, "수정") }
+            assertThatThrownBy { sut.modify(commentId, "수정") }
                 .isInstanceOf(CommentNotFoundException::class.java)
                 .hasMessageContaining(COMMENT_NOT_FOUND.message)
         }
@@ -153,7 +153,7 @@ class CommentServiceTest {
             whenever(commentRepository.findById(commentId)).thenReturn(Optional.of(comment))
 
             // when
-            sut.modify(commentId, userId, "수정된 내용")
+            sut.modify(commentId, "수정된 내용")
 
             // then
             assertThat(comment.content).isEqualTo("수정된 내용")
@@ -170,7 +170,7 @@ class CommentServiceTest {
             whenever(commentRepository.findById(commentId)).thenReturn(Optional.of(comment))
 
             // when & then
-            assertThatThrownBy { sut.remove(commentId, otherUserId) }
+            assertThatThrownBy { sut.remove(commentId) }
                 .isInstanceOf(UnauthorizedCommentAccessException::class.java)
                 .hasMessageContaining(UNAUTHORIZED_COMMENT_ACCESS.message)
         }
@@ -182,7 +182,7 @@ class CommentServiceTest {
             whenever(commentRepository.findById(commentId)).thenReturn(Optional.empty())
 
             // when & then
-            assertThatThrownBy { sut.remove(commentId, userId) }
+            assertThatThrownBy { sut.remove(commentId) }
                 .isInstanceOf(CommentNotFoundException::class.java)
                 .hasMessageContaining(COMMENT_NOT_FOUND.message)
         }
@@ -199,7 +199,7 @@ class CommentServiceTest {
             whenever(commentRepository.findAllByParentId(commentId)).thenReturn(listOf(reply1, reply2))
 
             // when
-            sut.remove(commentId, userId)
+            sut.remove(commentId)
 
             // then
             verify(commentRepository).findAllByParentId(commentId)
