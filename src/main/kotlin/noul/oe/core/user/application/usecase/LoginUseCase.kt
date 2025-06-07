@@ -4,7 +4,6 @@ import noul.oe.core.user.application.exception.InvalidCredentialsException
 import noul.oe.core.user.application.exception.UserNotFoundException
 import noul.oe.core.user.application.port.input.AuthCommandPort
 import noul.oe.core.user.application.port.input.LoginCommand
-import noul.oe.core.user.application.port.input.LoginResult
 import noul.oe.core.user.application.port.output.UserRepositoryPort
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -17,7 +16,7 @@ class LoginUseCase(
     private val passwordEncoder: PasswordEncoder,
 ) : AuthCommandPort {
 
-    override fun login(command: LoginCommand): LoginResult {
+    override fun login(command: LoginCommand) {
         val username = command.username
         val user = userRepositoryPort.findByUsername(username)
             ?: throw UserNotFoundException(username)
@@ -26,13 +25,5 @@ class LoginUseCase(
         if (!passwordEncoder.matches(command.password, user.password)) {
             throw InvalidCredentialsException(command.username)
         }
-
-        return LoginResult(
-            userId = user.id,
-            username = user.username,
-            email = user.email,
-            createdAt = user.createdAt,
-            modifiedAt = user.modifiedAt,
-        )
     }
 }

@@ -7,5 +7,5 @@ data class CommentInfo(
     val username: String = "",
     val createdAt: String,
     val editable: Boolean,
-    var children: List<CommentInfo>,
+    val children: MutableList<CommentInfo> = mutableListOf(),
 )

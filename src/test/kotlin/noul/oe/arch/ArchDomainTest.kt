@@ -5,9 +5,9 @@ import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
-class ArchTest {
+class ArchDomainTest {
     // 분석할 기준 패키지 루트
-    private val basePackage = "noul.oe.domain"
+    private val basePackage = "noul.oe.core"
 
     // 지정한 패키지 이하의 class 파일 로드
     private val classes = ClassFileImporter().importPackages(basePackage)

@@ -24,21 +24,16 @@ class CommentInfoProviderImpl(
                 username = "",
                 createdAt = comment.createdAt.toString(),
                 editable = comment.userId == userId,
-                children = emptyList()
             )
-        }.toMutableMap()
+        }
 
         val rootCommentList = mutableListOf<CommentInfo>()
         commentList.forEach { comment ->
             val commentInfo = commentInfoMap[comment.id]!!
             if (comment.parentId == null) {
                 rootCommentList.add(commentInfo)
-
             } else {
-                val parentInfo = commentInfoMap[comment.parentId]!!
-                val updatedChildren = parentInfo.children.toMutableList()
-                updatedChildren.add(commentInfo)
-                commentInfoMap[comment.parentId!!] = parentInfo.copy(children = updatedChildren)
+                commentInfoMap[comment.parentId]?.children?.add(commentInfo)
             }
         }
 
