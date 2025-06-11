@@ -33,7 +33,7 @@ class UserApiControllerTest {
     lateinit var userCommandPort: UserCommandPort
 
     @Test
-    @DisplayName("회원사입 성공 시 201 응답을 반환한다")
+    @DisplayName("POST /api/users/signup - 회원사입 성공 시 201 응답을 반환한다")
     fun signUpTest() {
         // given
         val request = UserSignUpRequest("testUser", "test@test.com", "password")

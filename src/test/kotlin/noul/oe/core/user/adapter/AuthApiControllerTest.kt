@@ -38,7 +38,7 @@ class AuthApiControllerTest {
     lateinit var sessionHandler: SessionHandler
 
     @Test
-    @DisplayName("로그인 성공 시 204 응답을 반환한다")
+    @DisplayName("POST /api/auth/login - 로그인 성공 시 204 응답을 반환한다")
     fun loginTest() {
         // given
         val request = UserLoginRequest("testUser", "password")
@@ -57,7 +57,7 @@ class AuthApiControllerTest {
     }
 
     @Test
-    @DisplayName("로그아웃 성공 시 204 응답을 반환한다")
+    @DisplayName("POST /api/auth/logout - 로그아웃 성공 시 204 응답을 반환한다")
     fun logoutTest() {
         // given
         doNothing().whenever(sessionHandler).logout(any<HttpServletRequest>())
