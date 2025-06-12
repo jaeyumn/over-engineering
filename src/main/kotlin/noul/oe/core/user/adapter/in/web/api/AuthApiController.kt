@@ -21,14 +21,14 @@ class AuthApiController(
     fun login(
         @Valid @RequestBody requestDto: UserLoginRequest,
         httpRequest: HttpServletRequest,
-    ): ResponseEntity<UserLoginResponse> {
+    ): ResponseEntity<Void> {
         val command = requestDto.toCommand()
-        val result = authCommandPort.login(command)
+        authCommandPort.login(command)
 
         // 세션 set
         sessionHandler.setUpSecurityContext(command.username, command.password, httpRequest)
 
-        return ResponseEntity.ok(UserLoginResponse.from(result))
+        return ResponseEntity.noContent().build()
     }
 
     @PostMapping("/logout")

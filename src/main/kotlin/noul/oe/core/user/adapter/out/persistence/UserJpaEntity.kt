@@ -37,7 +37,6 @@ class UserJpaEntity(
     @Column(nullable = false)
     val modifiedAt: LocalDateTime = LocalDateTime.now(),
 ) {
-
     companion object {
         fun create(user: User): UserJpaEntity = UserJpaEntity(
             id = user.id,

@@ -3,10 +3,12 @@ package noul.oe.core.comment.adapter.out.persistence
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "comment", catalog = "comment_db")
+@EntityListeners(AuditingEntityListener::class)
 class CommentJpaEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
