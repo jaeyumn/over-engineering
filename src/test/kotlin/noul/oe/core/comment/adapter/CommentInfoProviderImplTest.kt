@@ -3,6 +3,8 @@ package noul.oe.core.comment.adapter
 import noul.oe.core.comment.adapter.out.info.CommentInfoProviderImpl
 import noul.oe.core.comment.adapter.out.persistence.CommentJpaEntity
 import noul.oe.core.comment.adapter.out.persistence.CommentJpaRepository
+import noul.oe.support.redis.CacheKey
+import noul.oe.support.redis.RedisCacheService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -10,9 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import java.time.LocalDateTime
 
 @ExtendWith(MockitoExtension::class)
@@ -20,6 +20,9 @@ class CommentInfoProviderImplTest {
 
     @Mock
     lateinit var commentRepository: CommentJpaRepository
+
+    @Mock
+    lateinit var redisCacheService: RedisCacheService
 
     lateinit var sut: CommentInfoProviderImpl
 
@@ -30,7 +33,7 @@ class CommentInfoProviderImplTest {
 
     @BeforeEach
     fun setUp() {
-        sut = CommentInfoProviderImpl(commentRepository)
+        sut = CommentInfoProviderImpl(commentRepository, redisCacheService)
     }
 
     @Test
@@ -38,14 +41,25 @@ class CommentInfoProviderImplTest {
     fun getCommentCountTest() {
         // given
         val expectedCount = 5
-        whenever(commentRepository.countByPostId(testPostId)).thenReturn(expectedCount)
+        val cacheKey = CacheKey.COMMENT_COUNT.with(testPostId)
+        val lockKey = CacheKey.COMMENT_COUNT.lockFor(testPostId)
+
+        whenever(
+            redisCacheService.getOrSetWithLock(
+                key = eq(cacheKey),
+                lockKey = eq(lockKey),
+                ttlMinutes = any(),
+                lockTimeoutSeconds = any(),
+                recheckDelayMillis = any(),
+                valueFetcher = any<() -> Int>()
+            )
+        ).thenReturn(expectedCount)
 
         // when
         val result = sut.getCommentCount(testPostId)
 
         // then
         assertThat(result).isEqualTo(expectedCount)
-        verify(commentRepository, times(1)).countByPostId(testPostId)
     }
 
     @Test

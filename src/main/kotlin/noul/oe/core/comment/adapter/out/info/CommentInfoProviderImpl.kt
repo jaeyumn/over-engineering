@@ -3,15 +3,31 @@ package noul.oe.core.comment.adapter.out.info
 import noul.oe.core.comment.adapter.out.persistence.CommentJpaRepository
 import noul.oe.support.port.CommentInfoProvider
 import noul.oe.support.port.dto.CommentInfo
+import noul.oe.support.redis.CacheKey
+import noul.oe.support.redis.RedisCacheService
 import org.springframework.stereotype.Component
 
 @Component
 class CommentInfoProviderImpl(
     private val commentRepository: CommentJpaRepository,
+    private val redisCacheService: RedisCacheService,
 ) : CommentInfoProvider {
 
     override fun getCommentCount(postId: Long): Int {
-        return commentRepository.countByPostId(postId)
+        val cacheKey = CacheKey.COMMENT_COUNT.with(postId)
+        val lockKey = CacheKey.COMMENT_COUNT.lockFor(postId)
+        val ttlMinutes = 60L
+
+        val count = redisCacheService.getOrSetWithLock(
+            key = cacheKey,
+            lockKey = lockKey,
+            ttlMinutes = ttlMinutes,
+            valueFetcher = {
+                commentRepository.countByPostId(postId)
+            }
+        )
+
+        return count ?: 0
     }
 
     override fun getCommentList(postId: Long, userId: String): List<CommentInfo> {
