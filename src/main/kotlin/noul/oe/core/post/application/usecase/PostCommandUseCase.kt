@@ -46,6 +46,10 @@ class PostCommandUseCase(
         postRepositoryPort.delete(postId)
     }
 
+    override fun increaseViewCount(postId: Long) {
+        postRepositoryPort.increaseViewCount(postId)
+    }
+
     private fun getPost(postId: Long): Post {
         return postRepositoryPort.findById(postId)
             ?: throw PostNotFoundException(postId)

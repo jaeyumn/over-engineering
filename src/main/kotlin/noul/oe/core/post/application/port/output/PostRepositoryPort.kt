@@ -10,4 +10,8 @@ interface PostRepositoryPort {
     fun findAll(pageable: Pageable): Page<Post>
     fun merge(post: Post)
     fun delete(postId: Long)
+
+    fun increaseViewCount(postId: Long)
+    fun increaseLikeCount(postId: Long)
+    fun decreaseLikeCount(postId: Long)
 }

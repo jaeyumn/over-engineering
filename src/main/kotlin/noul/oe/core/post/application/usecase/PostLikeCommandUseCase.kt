@@ -2,11 +2,9 @@ package noul.oe.core.post.application.usecase
 
 import noul.oe.core.post.application.exception.AlreadyLikedPostException
 import noul.oe.core.post.application.exception.PostLikeNotFoundException
-import noul.oe.core.post.application.exception.PostNotFoundException
 import noul.oe.core.post.application.port.input.PostLikeCommandPort
 import noul.oe.core.post.application.port.output.PostLikeRepositoryPort
 import noul.oe.core.post.application.port.output.PostRepositoryPort
-import noul.oe.core.post.domain.Post
 import noul.oe.core.post.domain.PostLike
 import noul.oe.support.security.SecurityUtils
 import org.springframework.stereotype.Service
@@ -22,11 +20,8 @@ class PostLikeCommandUseCase(
     override fun like(postId: Long) {
         val userId = SecurityUtils.getCurrentUser().userId
 
-        val post = getPost(postId)
         checkIsAlreadyLiked(userId, postId)
-
-        post.like()
-        postRepositoryPort.save(post)
+        postRepositoryPort.increaseLikeCount(postId);
 
         val postLike = PostLike(userId = userId, postId = postId)
         postLikeRepositoryPort.save(postLike)
@@ -35,17 +30,11 @@ class PostLikeCommandUseCase(
     override fun unlike(postId: Long) {
         val userId = SecurityUtils.getCurrentUser().userId
 
-        val post = getPost(postId)
-        post.unlike()
-        postRepositoryPort.save(post)
+        postRepositoryPort.decreaseLikeCount(postId);
 
         val postLike = postLikeRepositoryPort.findByUserIdAndPostId(userId, postId)
             ?: throw PostLikeNotFoundException(postId)
         postLikeRepositoryPort.delete(postLike.id!!)
-    }
-
-    private fun getPost(postId: Long): Post {
-        return postRepositoryPort.findById(postId) ?: throw PostNotFoundException(postId)
     }
 
     // 이미 좋아요를 눌렀는지 확인

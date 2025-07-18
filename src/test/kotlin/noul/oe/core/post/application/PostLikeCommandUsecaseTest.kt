@@ -1,7 +1,6 @@
 package noul.oe.core.post.application
 
 import noul.oe.core.post.application.exception.AlreadyLikedPostException
-import noul.oe.core.post.application.exception.PostNotFoundException
 import noul.oe.core.post.application.port.output.PostLikeRepositoryPort
 import noul.oe.core.post.application.port.output.PostRepositoryPort
 import noul.oe.core.post.application.usecase.PostLikeCommandUseCase
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -29,7 +27,6 @@ class PostLikeCommandUsecaseTest {
     private lateinit var sut: PostLikeCommandUseCase
 
     private val existsPostId = 1L
-    private val noneExistsPostId = 1004L
     private val userId = "testId"
     private val now = LocalDateTime.now()
 
@@ -53,17 +50,6 @@ class PostLikeCommandUsecaseTest {
     inner class Like {
 
         @Test
-        @DisplayName("존재하지 않는 게시글이면 예외가 발생한다")
-        fun test1() {
-            // given
-            whenever(postRepositoryPort.findById(noneExistsPostId)).thenReturn(null)
-
-            // when & then
-            assertThatThrownBy { sut.like(noneExistsPostId) }
-                .isInstanceOf(PostNotFoundException::class.java)
-        }
-
-        @Test
         @DisplayName("이미 좋아요한 게시글이면 예외가 발생한다")
         fun test2() {
             // given
@@ -81,9 +67,10 @@ class PostLikeCommandUsecaseTest {
         @DisplayName("게시글 좋아요에 성공한다")
         fun test100() {
             // given
+            val postId = 1L
             val testPostLike = PostLike(
                 userId = userId,
-                postId = 1L,
+                postId = postId,
             )
             whenever(postRepositoryPort.findById(existsPostId)).thenReturn(testPost)
             whenever(postLikeRepositoryPort.existsByUserIdAndPostId("testId", existsPostId)).thenReturn(false)
@@ -92,7 +79,7 @@ class PostLikeCommandUsecaseTest {
             sut.like(existsPostId)
 
             // then
-            verify(postRepositoryPort).save(testPost)
+            verify(postRepositoryPort).increaseLikeCount(postId)
             verify(postLikeRepositoryPort).save(testPostLike)
         }
     }
@@ -100,17 +87,6 @@ class PostLikeCommandUsecaseTest {
     @Nested
     @WithMockCustomUser
     inner class UnLike {
-
-        @Test
-        @DisplayName("존재하지 않는 게시글이면 예외가 발생한다")
-        fun test1() {
-            // given
-            whenever(postRepositoryPort.findById(noneExistsPostId)).thenReturn(null)
-
-            // when & then
-            assertThatThrownBy { sut.unlike(noneExistsPostId) }
-                .isInstanceOf(PostNotFoundException::class.java)
-        }
 
         @Test
         @DisplayName("게시글 좋아요 취소에 성공한다")
@@ -129,7 +105,7 @@ class PostLikeCommandUsecaseTest {
             sut.unlike(postId)
 
             // then
-            verify(postRepositoryPort).save(any())
+            verify(postRepositoryPort).decreaseLikeCount(postId)
             verify(postLikeRepositoryPort).delete(testPostLike.id!!)
         }
     }

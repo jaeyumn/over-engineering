@@ -1,6 +1,7 @@
 package noul.oe.core.post.adapter.`in`.web.page
 
 import noul.oe.core.post.application.exception.PostPermissionDeniedException
+import noul.oe.core.post.application.port.input.PostCommandPort
 import noul.oe.core.post.application.port.input.PostQueryPort
 import noul.oe.support.security.SecurityUtils
 import org.springframework.data.domain.Pageable
@@ -15,6 +16,7 @@ import java.security.Principal
 @Controller
 class PostPageController(
     private val postQueryPort: PostQueryPort,
+    private val postCommandPort: PostCommandPort,
 ) {
     @GetMapping("/posts")
     fun readAll(
@@ -32,6 +34,7 @@ class PostPageController(
     @GetMapping("/posts/{postId}")
     fun readDetail(@PathVariable postId: Long, model: Model): String {
         val postWithComments = postQueryPort.readWithComments(postId)
+        postCommandPort.increaseViewCount(postId)
 
         val user = SecurityUtils.getCurrentUser()
         model.addAttribute("post", postWithComments.post)

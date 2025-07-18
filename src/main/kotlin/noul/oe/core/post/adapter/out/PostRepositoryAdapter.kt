@@ -35,4 +35,16 @@ class PostRepositoryAdapter(
     override fun delete(postId: Long) {
         postJpaRepository.deleteById(postId)
     }
+
+    override fun increaseViewCount(postId: Long) {
+        postJpaRepository.increaseViewCount(postId)
+    }
+
+    override fun increaseLikeCount(postId: Long) {
+        postJpaRepository.increaseLikeCount(postId);
+    }
+
+    override fun decreaseLikeCount(postId: Long) {
+        postJpaRepository.decreaseLikeCount(postId);
+    }
 }
