@@ -4,4 +4,5 @@ interface PostCommandPort {
     fun create(command: CreatePostCommand)
     fun modify(command: ModifyPostCommand)
     fun remove(postId: Long)
+    fun increaseViewCount(postId: Long)
 }
